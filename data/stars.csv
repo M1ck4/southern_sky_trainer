@@ -1,0 +1,218 @@
+id,name,aliases,ra_deg,dec_deg,magnitude,constellation,object_type,distance_ly,spectral_type,colour_desc,luminosity_solar
+sirius,Sirius,Alpha Canis Majoris; α CMa; Dog Star,101.2872,-16.7161,-1.46,Canis Major,star,8.6,A1V,White main sequence,25.4
+canopus,Canopus,Alpha Carinae; α Car,95.9879,-52.6957,-0.74,Carina,star,310,A9II,Yellow-white bright giant,10700
+arcturus,Arcturus,Alpha Bootis; α Boo,213.9153,19.1824,-0.05,Bootes,star,37,K1.5III,Orange giant,170
+vega,Vega,Alpha Lyrae; α Lyr,279.2347,38.7837,0.03,Lyra,star,25,A0V,Blue-white main sequence,40
+capella,Capella,Alpha Aurigae; α Aur,79.1723,45.9979,0.08,Auriga,star,43,G8III,Yellow giant,79
+rigel,Rigel,Beta Orionis; β Ori,78.6345,-8.2016,0.13,Orion,star,860,B8Ia,Blue-white supergiant,120000
+procyon,Procyon,Alpha Canis Minoris; α CMi,114.8255,5.2250,0.34,Canis Minor,star,11.5,F5IV-V,Yellow-white subgiant,6.9
+achernar,Achernar,Alpha Eridani; α Eri,24.4286,-57.2368,0.46,Eridanus,star,139,B6Vep,Blue-white main sequence,3150
+betelgeuse,Betelgeuse,Alpha Orionis; α Ori,88.7929,7.4071,0.42,Orion,star,700,M2Iab,Red supergiant,126000
+hadar,Hadar,Beta Centauri; β Cen; Agena,210.9558,-60.3730,0.61,Centaurus,star,390,B1III,Blue-white giant,41700
+altair,Altair,Alpha Aquilae; α Aql,297.6958,8.8683,0.77,Aquila,star,17,A7V,White main sequence,10.6
+acrux,Acrux,Alpha Crucis; α Cru,186.6490,-63.0991,0.76,Crux,star,320,B0.5IV,Blue-white subgiant,25000
+aldebaran,Aldebaran,Alpha Tauri; α Tau,68.9800,16.5093,0.85,Taurus,star,65,K5III,Orange giant,518
+antares,Antares,Alpha Scorpii; α Sco,247.3519,-26.4320,1.06,Scorpius,star,550,M1.5Iab,Red supergiant,75900
+spica,Spica,Alpha Virginis; α Vir,201.2983,-11.1614,0.98,Virgo,star,250,B1III-IV,Blue-white giant,12100
+pollux,Pollux,Beta Geminorum; β Gem,116.3289,28.0262,1.14,Gemini,star,34,K0III,Orange giant,32.7
+fomalhaut,Fomalhaut,Alpha Piscis Austrini; α PsA,344.4128,-29.6222,1.16,Piscis Austrinus,star,25,A4V,White main sequence,16.6
+deneb,Deneb,Alpha Cygni; α Cyg,310.3579,45.2803,1.25,Cygnus,star,2600,A2Ia,White supergiant,196000
+mimosa,Mimosa,Beta Crucis; β Cru,191.9303,-59.6888,1.25,Crux,star,280,B0.5III,Blue-white giant,34000
+regulus,Regulus,Alpha Leonis; α Leo,152.0929,11.9672,1.35,Leo,star,79,B8IVn,Blue-white subgiant,288
+adhara,Adhara,Epsilon Canis Majoris; ε CMa,104.6564,-28.9721,1.50,Canis Major,star,430,B2Iab,Blue-white supergiant,38700
+shaula,Shaula,Lambda Scorpii; λ Sco,263.4022,-37.1038,1.62,Scorpius,star,570,B2IV,Blue-white subgiant,36300
+castor,Castor,Alpha Geminorum; α Gem,113.6494,31.8883,1.58,Gemini,star,51,A1V,White main sequence,52.4
+gacrux,Gacrux,Gamma Crucis; γ Cru,187.7915,-57.1132,1.63,Crux,star,88,M3.5III,Red giant,1500
+bellatrix,Bellatrix,Gamma Orionis; γ Ori,81.2828,6.3497,1.64,Orion,star,250,B2III,Blue-white giant,9211
+elnath,Elnath,Beta Tauri; β Tau,81.5729,28.6075,1.65,Taurus,star,134,B7III,Blue-white giant,700
+miaplacidus,Miaplacidus,Beta Carinae; β Car,138.3008,-69.7172,1.67,Carina,star,111,A2IV,White subgiant,288
+alnilam,Alnilam,Epsilon Orionis; ε Ori,84.0534,-1.2019,1.69,Orion,star,2000,B0Ia,Blue supergiant,275000
+alnair,Alnair,Alpha Gruis; α Gru,332.0583,-46.9609,1.74,Grus,star,101,B6V,Blue-white main sequence,520
+alkaid,Alkaid,Eta Ursae Majoris; η UMa,206.8856,49.3133,1.86,Ursa Major,star,104,B3V,Blue-white main sequence,594
+alioth,Alioth,Epsilon Ursae Majoris; ε UMa,193.5073,55.9598,1.76,Ursa Major,star,81,A1III-IVp,White giant,108
+dubhe,Dubhe,Alpha Ursae Majoris; α UMa,165.4603,61.7510,1.79,Ursa Major,star,124,K0III,Orange giant,316
+merak,Merak,Beta Ursae Majoris; β UMa,165.9320,56.3824,2.37,Ursa Major,star,80,A1IVn,White subgiant,63.0
+phecda,Phecda,Gamma Ursae Majoris; γ UMa,178.4577,53.6948,2.41,Ursa Major,star,84,A0Ve,White main sequence,65.3
+megrez,Megrez,Delta Ursae Majoris; δ UMa,183.8565,57.0326,3.31,Ursa Major,star,81,A3V,White main sequence,14.0
+mizar,Mizar,Zeta Ursae Majoris; ζ UMa,200.9814,54.9254,2.23,Ursa Major,star,78,A2Vp,White main sequence,33.3
+alcor,Alcor,80 Ursae Majoris,201.3063,54.9879,3.99,Ursa Major,star,82,A5V,White main sequence,10.0
+polaris,Polaris,Alpha Ursae Minoris; α UMi; North Star,37.9546,89.2641,1.98,Ursa Minor,star,430,F7Ib,Yellow-white supergiant,1260
+hamal,Hamal,Alpha Arietis; α Ari,31.7934,23.4624,2.00,Aries,star,66,K2III,Orange giant,91
+menkar,Menkar,Alpha Ceti; α Cet,45.5699,4.0897,2.54,Cetus,star,220,M1.5IIIa,Red giant,1455
+algol,Algol,Beta Persei; β Per,47.0422,40.9556,2.12,Perseus,star,90,B8V,Blue-white main sequence,98
+mirfak,Mirfak,Alpha Persei; α Per,51.0807,49.8612,1.79,Perseus,star,590,F5Ib,Yellow-white supergiant,5000
+alpheratz,Alpheratz,Alpha Andromedae; α And,2.0969,29.0904,2.06,Andromeda,star,97,B8IVpMnHg,Blue-white subgiant,200
+mirach,Mirach,Beta Andromedae; β And,17.4330,35.6206,2.07,Andromeda,star,200,M0III,Red giant,1995
+almach,Almach,Gamma Andromedae; γ And,30.9748,42.3297,2.10,Andromeda,star,350,K3IIb,Orange bright giant,2000
+markab,Markab,Alpha Pegasi; α Peg,346.1900,15.2053,2.49,Pegasus,star,140,B9III,Blue-white giant,165
+scheat,Scheat,Beta Pegasi; β Peg,345.9436,28.0825,2.42,Pegasus,star,200,M2.5II-III,Red giant,1500
+algenib,Algenib,Gamma Pegasi; γ Peg,3.3089,15.1836,2.84,Pegasus,star,390,B2IV,Blue-white subgiant,5840
+enif,Enif,Epsilon Pegasi; ε Peg,326.0465,9.8750,2.39,Pegasus,star,690,K2Ib,Orange supergiant,12250
+rasalhague,Rasalhague,Alpha Ophiuchi; α Oph,263.7336,12.5600,2.08,Ophiuchus,star,49,A5III,White giant,25.6
+kochab,Kochab,Beta Ursae Minoris; β UMi,222.6763,74.1555,2.08,Ursa Minor,star,131,K4III,Orange giant,390
+nunki,Nunki,Sigma Sagittarii; σ Sgr,283.8161,-26.2967,2.05,Sagittarius,star,228,B2.5V,Blue-white main sequence,3300
+kaus_australis,Kaus Australis,Epsilon Sagittarii; ε Sgr,276.0430,-34.3846,1.79,Sagittarius,star,143,B9.5III,Blue-white giant,363
+sadr,Sadr,Gamma Cygni; γ Cyg,305.5571,40.2567,2.23,Cygnus,star,1800,F8Ib,Yellow-white supergiant,33000
+albireo,Albireo,Beta Cygni; β Cyg,292.6803,27.9597,3.18,Cygnus,star,430,K3II,Orange bright giant,950
+peacock,Peacock,Alpha Pavonis; α Pav,306.4120,-56.7351,1.94,Pavo,star,180,B2IV,Blue-white subgiant,2200
+atria,Atria,Alpha Trianguli Australis; α TrA,252.1662,-69.0277,1.91,Triangulum Australe,star,415,K2IIb-IIIa,Orange bright giant,5500
+suhail,Suhail,Lambda Velorum; λ Vel,136.9990,-43.4326,2.21,Vela,star,545,K4Ib,Orange supergiant,11000
+avior,Avior,Epsilon Carinae; ε Car,125.6285,-59.5095,1.86,Carina,star,630,K3III,Orange giant,12300
+naos,Naos,Zeta Puppis; ζ Pup,120.8960,-40.0031,2.21,Puppis,star,1080,O4If,Blue supergiant,813000
+wezen,Wezen,Delta Canis Majoris; δ CMa,107.0978,-26.3932,1.83,Canis Major,star,1800,F8Ia,Yellow-white supergiant,82000
+mirzam,Mirzam,Beta Canis Majoris; β CMa,95.6749,-17.9559,1.98,Canis Major,star,500,B1II-III,Blue-white giant,26600
+alnitak,Alnitak,Zeta Orionis; ζ Ori,85.1897,-1.9426,1.74,Orion,star,1200,O9.5Ib,Blue supergiant,250000
+saiph,Saiph,Kappa Orionis; κ Ori,86.9391,-9.6696,2.07,Orion,star,650,B0.5Ia,Blue supergiant,56881
+mintaka,Mintaka,Delta Orionis; δ Ori,83.0017,-0.2991,2.25,Orion,star,1200,O9.5II,Blue bright giant,190000
+rigil_kentaurus,Rigil Kentaurus,Alpha Centauri; Alpha Centauri A; α Cen,219.9021,-60.8339,-0.27,Centaurus,star,4.4,G2V,Yellow main sequence (Sun-like),1.5
+sheliak,Sheliak,Beta Lyrae; β Lyr,282.5199,33.3627,3.52,Lyra,star,960,B6-8IIpe,Blue-white giant,26300
+sulafat,Sulafat,Gamma Lyrae; γ Lyr,284.7359,32.6896,3.25,Lyra,star,620,B9III,Blue-white giant,2430
+tarazed,Tarazed,Gamma Aquilae; γ Aql,296.5650,10.6133,2.72,Aquila,star,395,K3II,Orange bright giant,2538
+alshain,Alshain,Beta Aquilae; β Aql,298.8283,6.4067,3.71,Aquila,star,45,G8IV,Yellow subgiant,6.0
+izar,Izar,Epsilon Bootis; ε Boo,221.2467,27.0742,2.37,Bootes,star,210,K0II-III,Orange giant,501
+denebola,Denebola,Beta Leonis; β Leo,177.2649,14.5721,2.14,Leo,star,36,A3Va,White main sequence,15.0
+zavijava,Zavijava,Beta Virginis; β Vir,177.6738,1.7647,3.61,Virgo,star,36,F9V,Yellow-white main sequence,3.6
+sheratan,Sheratan,Beta Arietis; β Ari,28.6600,20.8080,2.64,Aries,star,60,A5V,White main sequence,23
+mesarthim,Mesarthim,Gamma Arietis; γ Ari,28.3825,19.2939,3.88,Aries,star,164,A1Vs,White main sequence,56
+decrux,Decrux,Delta Crucis; δ Cru,183.7863,-58.7490,2.78,Crux,star,345,B2IV,Blue-white subgiant,8300
+menkalinan,Menkalinan,Beta Aurigae; β Aur,89.8823,44.9474,1.90,Auriga,star,82,A1IV,White subgiant,48
+mahasim,Mahasim,Theta Aurigae; θ Aur,89.9303,37.2126,2.62,Auriga,star,166,A0p,White main sequence,70
+hassaleh,Hassaleh,Iota Aurigae; ι Aur,74.2484,33.1661,2.69,Auriga,star,490,K3II,Orange bright giant,2500
+almaaz,Almaaz,Epsilon Aurigae; ε Aur,75.4923,43.8233,2.99,Auriga,star,2000,A8Ia,White supergiant,47000
+gomeisa,Gomeisa,Beta Canis Minoris; β CMi,111.7877,8.2894,2.84,Canis Minor,star,162,B8Ve,Blue-white main sequence,195
+diphda,Diphda,Beta Ceti; β Cet; Deneb Kaitos,10.8971,-17.9866,2.04,Cetus,star,96,K0III,Orange giant,145
+mira,Mira,Omicron Ceti; ο Cet,34.8365,-2.9776,3.04,Cetus,star,300,M7IIIe,Red giant (variable),8400
+cursa,Cursa,Beta Eridani; β Eri,76.9624,-5.0861,2.79,Eridanus,star,89,A3IV,White subgiant,48
+zaurak,Zaurak,Gamma Eridani; γ Eri,59.5074,-13.5086,2.95,Eridanus,star,150,M0.5III,Red giant,370
+gruid,Gruid,Beta Gruis; β Gru,340.6668,-46.8847,2.07,Grus,star,170,M5III,Red giant,2500
+aldhanab,Al Dhanab,Gamma Gruis; γ Gru,328.4822,-37.3649,3.01,Grus,star,211,B8III,Blue-white giant,1100
+cebalrai,Cebalrai,Beta Ophiuchi; β Oph,265.8683,4.5671,2.77,Ophiuchus,star,82,K2III,Orange giant,63
+sabik,Sabik,Eta Ophiuchi; η Oph,257.5946,-15.7249,2.43,Ophiuchus,star,88,A1V,White main sequence,38
+beta_pavonis,Beta Pavonis,Beta Pavonis; β Pav,311.2398,-66.2032,3.42,Pavo,star,137,A7III,White giant,58
+delta_psa,Delta PsA,Delta Piscis Austrini; δ PsA,343.6628,-32.5396,4.20,Piscis Austrinus,star,170,G8IV,Yellow subgiant,19
+pi_puppis,Pi Puppis,Pi Puppis; π Pup; Ahadi,109.2857,-37.0974,2.70,Puppis,star,810,K3Ib,Orange supergiant,19000
+rho_puppis,Rho Puppis,Rho Puppis; ρ Pup; Tureis,121.8860,-24.3044,2.81,Puppis,star,63,F6IIp,Yellow-white bright giant,22
+beta_tra,Beta TrA,Beta Trianguli Australis; β TrA,252.4457,-63.4300,2.85,Triangulum Australe,star,40,F1V,Yellow-white main sequence,8.2
+gamma_tra,Gamma TrA,Gamma Trianguli Australis; γ TrA,238.1692,-68.6795,2.87,Triangulum Australe,star,184,A1IV,White subgiant,490
+alsephina,Alsephina,Delta Velorum; δ Vel,131.1760,-54.7088,1.96,Vela,star,80,A1Va,White main sequence,56
+markeb_vel,Markeb,Kappa Velorum; κ Vel,140.5283,-55.0107,2.50,Vela,star,540,B2IV-V,Blue-white subgiant,10500
+schedar,Schedar,Alpha Cassiopeiae; α Cas,10.1268,56.5373,2.24,Cassiopeia,star,228,K0IIIa,Orange giant,676
+caph,Caph,Beta Cassiopeiae; β Cas,2.2946,59.1498,2.28,Cassiopeia,star,55,F2III,Yellow-white giant,28.3
+gamma_cas,Gamma Cas,Gamma Cassiopeiae; γ Cas; Tsih,14.1772,60.7168,2.47,Cassiopeia,star,550,B0.5IVe,Blue subgiant (variable),34000
+ruchbah,Ruchbah,Delta Cassiopeiae; δ Cas,21.4539,60.2353,2.68,Cassiopeia,star,99,A5III-IV,White giant,63
+segin,Segin,Epsilon Cassiopeiae; ε Cas,28.5986,63.6701,3.37,Cassiopeia,star,440,B3III,Blue-white giant,2500
+eltanin,Eltanin,Gamma Draconis; γ Dra,269.1515,51.4889,2.23,Draco,star,148,K5III,Orange giant,600
+aldhibah,Aldhibah,Eta Draconis; η Dra,245.9979,61.5140,2.74,Draco,star,87,G8III,Yellow giant,36
+rastaban,Rastaban,Beta Draconis; β Dra,262.6081,52.3014,2.79,Draco,star,380,G2II,Yellow bright giant,950
+thuban,Thuban,Alpha Draconis; α Dra,211.0973,64.3758,3.65,Draco,star,303,A0III,White giant,479
+kornephoros,Kornephoros,Beta Herculis; β Her,247.5549,21.4896,2.78,Hercules,star,148,G7IIIa,Yellow giant,175
+zeta_her,Zeta Her,Zeta Herculis; ζ Her; Rutilicus,250.3226,31.6028,2.81,Hercules,star,35,G0IV,Yellow subgiant,6.6
+sarin,Sarin,Delta Herculis; δ Her,258.7579,24.8392,3.14,Hercules,star,75,A3IV,White subgiant,24
+eta_her,Eta Her,Eta Herculis; η Her; Sophian,254.1118,38.9222,3.49,Hercules,star,112,G7.5IIIa,Yellow giant,62
+pi_her,Pi Her,Pi Herculis; π Her,258.7621,36.8092,3.16,Hercules,star,370,K3II,Orange bright giant,1760
+epsilon_her,Epsilon Her,Epsilon Herculis; ε Her,258.0620,30.9264,3.92,Hercules,star,155,A0V,White main sequence,65
+zubeneschamali,Zubeneschamali,Beta Librae; β Lib,229.2518,-9.3829,2.61,Libra,star,185,B8V,Blue-white main sequence,130
+zubenelgenubi,Zubenelgenubi,Alpha Librae; α Lib,222.7196,-16.0418,2.75,Libra,star,77,A3IV,White subgiant,33
+brachium,Brachium,Sigma Librae; σ Lib,238.4565,-25.2819,3.29,Libra,star,292,M3.5III,Red giant,1820
+gienah,Gienah,Gamma Corvi; γ Crv,183.9516,-17.5419,2.59,Corvus,star,165,B8IIIp,Blue-white giant,355
+kraz,Kraz,Beta Corvi; β Crv,188.5968,-23.3968,2.65,Corvus,star,146,G5II,Yellow bright giant,164
+algorab,Algorab,Delta Corvi; δ Crv,187.4658,-16.5159,2.95,Corvus,star,88,A0V,White main sequence,69
+minkar,Minkar,Epsilon Corvi; ε Crv,182.1031,-22.6198,3.02,Corvus,star,303,K2III,Orange giant,930
+alphard,Alphard,Alpha Hydrae; α Hya,141.8968,-8.6586,1.98,Hydra,star,177,K3II-III,Orange giant,780
+alpha_lupi,Alpha Lupi,Alpha Lupi; α Lup; Men,220.4823,-47.3884,2.30,Lupus,star,460,B1.5III,Blue-white giant,25000
+beta_lupi,Beta Lupi,Beta Lupi; β Lup; Kekouan,224.6330,-43.1341,2.68,Lupus,star,383,B2III,Blue-white giant,8500
+alpha_mus,Alpha Mus,Alpha Muscae; α Mus,189.2960,-69.1355,2.69,Musca,star,315,B2IV-V,Blue-white subgiant,4520
+beta_mus,Beta Mus,Beta Muscae; β Mus,191.5703,-68.1082,3.05,Musca,star,341,B2V,Blue-white main sequence,3520
+arneb,Arneb,Alpha Leporis; α Lep,83.1826,-17.8222,2.58,Lepus,star,2200,F0Ib,Yellow-white supergiant,32000
+nihal,Nihal,Beta Leporis; β Lep,82.0613,-20.7594,2.84,Lepus,star,160,G5II,Yellow bright giant,171
+deneb_algedi,Deneb Algedi,Delta Capricorni; δ Cap,326.7602,-16.1272,2.87,Capricornus,star,39,A7III,White giant,8.5
+dabih,Dabih,Beta Capricorni; β Cap,305.2530,-14.7814,3.08,Capricornus,star,328,F8V,Yellow-white main sequence,600
+algedi,Algedi,Alpha Capricorni; α Cap,304.5136,-12.5082,3.57,Capricornus,star,690,G3Ib,Yellow supergiant,7600
+rotanev,Rotanev,Beta Delphini; β Del,309.3870,14.5953,3.63,Delphinus,star,101,F5III,Yellow-white giant,24
+sualocin,Sualocin,Alpha Delphini; α Del,309.9098,15.9122,3.77,Delphinus,star,240,B9IV,Blue-white subgiant,177
+alphecca,Alphecca,Alpha Coronae Borealis; α CrB; Gemma,233.6720,26.7147,2.23,Corona Borealis,star,75,A0V,White main sequence,74
+nusakan,Nusakan,Beta Coronae Borealis; β CrB,231.9572,29.1057,3.68,Corona Borealis,star,114,A9IVn,White subgiant,25
+beta_ara,Beta Ara,Beta Arae; β Ara,261.3252,-55.5298,2.85,Ara,star,600,K3Ib-IIa,Orange supergiant,4600
+alpha_ara,Alpha Ara,Alpha Arae; α Ara; Choo,262.7742,-49.8764,2.95,Ara,star,270,B2Vne,Blue-white main sequence,5800
+ankaa,Ankaa,Alpha Phoenicis; α Phe,6.5708,-42.3061,2.40,Phoenix,star,77,K0III,Orange giant,62
+beta_phe,Beta Phe,Beta Phoenicis; β Phe,16.5213,-46.7185,3.32,Phoenix,star,198,G8III,Yellow giant,150
+phact,Phact,Alpha Columbae; α Col,84.9121,-34.0741,2.64,Columba,star,268,B7IVe,Blue-white subgiant,1000
+wazn,Wazn,Beta Columbae; β Col,87.7399,-35.7683,3.12,Columba,star,87,K1.5III,Orange giant,53
+meridiana,Meridiana,Alpha Coronae Australis; α CrA,287.3681,-37.9044,4.10,Corona Australis,star,130,A2V,White main sequence,31
+beta_cra,Beta CrA,Beta Coronae Australis; β CrA,287.0772,-39.3406,4.11,Corona Australis,star,510,K0II,Orange bright giant,1120
+dschubba,Dschubba,Delta Scorpii; δ Sco,240.0835,-22.6217,2.32,Scorpius,star,490,B0.3IV,Blue subgiant,14000
+sargas,Sargas,Theta Scorpii; θ Sco,264.3297,-42.9978,1.87,Scorpius,star,300,F1II,Yellow-white bright giant,960
+epsilon_sco,Epsilon Sco,Epsilon Scorpii; ε Sco; Larawag,252.5409,-34.2933,2.29,Scorpius,star,65,K2.5III,Orange giant,68
+acrab,Acrab,Beta Scorpii; β Sco,241.3593,-19.8054,2.62,Scorpius,star,530,B1V,Blue-white main sequence,20000
+kaus_media,Kaus Media,Delta Sagittarii; δ Sgr,275.2486,-29.8281,2.70,Sagittarius,star,350,K3III,Orange giant,1180
+kaus_borealis,Kaus Borealis,Lambda Sagittarii; λ Sgr,276.9928,-25.4217,2.81,Sagittarius,star,77,K0IV,Orange subgiant,52
+ascella,Ascella,Zeta Sagittarii; ζ Sgr,285.6531,-29.8801,2.59,Sagittarius,star,90,A2.5Va,White main sequence,39
+phi_sgr,Phi Sgr,Phi Sagittarii; φ Sgr,281.4141,-26.9907,3.17,Sagittarius,star,231,B8III,Blue-white giant,750
+algieba,Algieba,Gamma Leonis; γ Leo,154.9930,19.8415,2.08,Leo,star,126,K1III,Orange giant,320
+zosma,Zosma,Delta Leonis; δ Leo,168.5271,20.5243,2.56,Leo,star,58,A4V,White main sequence,22.0
+hyadum_i,Hyadum I,Gamma Tauri; γ Tau; Prima Hyadum,64.9484,15.6275,3.65,Taurus,star,154,K0III,Orange giant,85
+ain,Ain,Epsilon Tauri; ε Tau,67.1544,19.1804,3.53,Taurus,star,155,K0III,Orange giant,97
+alhena,Alhena,Gamma Geminorum; γ Gem,99.4279,16.3993,1.93,Gemini,star,109,A1IV,White subgiant,160
+mebsuta,Mebsuta,Epsilon Geminorum; ε Gem,100.9833,25.1311,3.06,Gemini,star,840,G8Ib,Yellow supergiant,8500
+tejat,Tejat,Mu Geminorum; μ Gem; Tejat Posterior,95.7400,22.5135,2.88,Gemini,star,230,M3IIIab,Red giant,1148
+alpha_tuc,Alpha Tuc,Alpha Tucanae; α Tuc,334.6254,-60.2586,2.87,Tucana,star,199,K3III,Orange giant,424
+beta_tuc,Beta Tuc,Beta Tucanae; β Tuc,5.0163,-62.9582,4.37,Tucana,star,140,B9V,Blue-white main sequence,48
+gamma_tuc,Gamma Tuc,Gamma Tucanae; γ Tuc,349.3583,-58.2358,3.99,Tucana,star,72,F1III,Yellow-white giant,14
+beta_hyi,Beta Hyi,Beta Hydri; β Hyi,6.4126,-77.2544,2.80,Hydrus,star,24,G2IV,Yellow subgiant (Sun-like),3.5
+alpha_hyi,Alpha Hyi,Alpha Hydri; α Hyi,29.6911,-61.5698,2.86,Hydrus,star,72,F0III,Yellow-white giant,32
+gamma_hyi,Gamma Hyi,Gamma Hydri; γ Hyi,59.2115,-74.2390,3.24,Hydrus,star,214,M2III,Red giant,655
+nu_oct,Nu Oct,Nu Octantis; ν Oct,325.3693,-77.3904,3.73,Octans,star,63,K0III,Orange giant,16
+beta_oct,Beta Oct,Beta Octantis; β Oct,340.8358,-81.3816,4.15,Octans,star,140,A9III,White giant,24
+alpha_pic,Alpha Pic,Alpha Pictoris; α Pic,102.0481,-61.9414,3.27,Pictor,star,97,A8Vn,White main sequence,18
+beta_pic,Beta Pic,Beta Pictoris; β Pic,86.8212,-51.0665,3.86,Pictor,star,63,A6V,White main sequence,9.2
+alpha_dor,Alpha Dor,Alpha Doradus; α Dor,68.4993,-55.0450,3.27,Dorado,star,176,A0III,White giant,200
+beta_dor,Beta Dor,Beta Doradus; β Dor,83.4063,-62.4897,3.76,Dorado,star,1040,F4-G4Ia-II,Yellow supergiant (Cepheid),3500
+alpha_scl,Alpha Scl,Alpha Sculptoris; α Scl,14.5274,-29.3572,4.31,Sculptor,star,780,B7IIIp,Blue-white giant,3800
+beta_scl,Beta Scl,Beta Sculptoris; β Scl,349.7112,-37.8184,4.38,Sculptor,star,178,B9.5IVmn,Blue-white subgiant,90
+alpha_for,Alpha For,Alpha Fornacis; α For; Dalim,48.0188,-28.9838,3.87,Fornax,star,46,F8V,Yellow-white main sequence,4.9
+beta_for,Beta For,Beta Fornacis; β For,43.2366,-32.4057,4.46,Fornax,star,170,G8III,Yellow giant,55
+alpha_ind,Alpha Ind,Alpha Indi; α Ind; Persian,309.3920,-47.2915,3.11,Indus,star,101,K0III-IV,Orange giant,62
+beta_ind,Beta Ind,Beta Indi; β Ind,313.2044,-58.4541,3.65,Indus,star,600,K1III,Orange giant,3000
+theta_ind,Theta Ind,Theta Indi; θ Ind,321.6686,-53.4499,4.39,Indus,star,97,A5V,White main sequence,17
+gamma_vol,Gamma Vol,Gamma Volantis; γ Vol,111.8277,-70.4985,3.60,Volans,star,142,K0III,Orange giant,75
+beta_vol,Beta Vol,Beta Volantis; β Vol,126.4340,-66.1369,3.77,Volans,star,108,K2III,Orange giant,48
+zeta_vol,Zeta Vol,Zeta Volantis; ζ Vol,117.2544,-72.6062,3.93,Volans,star,134,K0III,Orange giant,44
+alpha_cha,Alpha Cha,Alpha Chamaeleontis; α Cha,124.6313,-76.9197,4.07,Chamaeleon,star,63,F5III,Yellow-white giant,8.1
+gamma_cha,Gamma Cha,Gamma Chamaeleontis; γ Cha,162.0175,-78.6086,4.11,Chamaeleon,star,413,M0III,Red giant,5600
+alpha_ret,Alpha Ret,Alpha Reticuli; α Ret,63.6060,-62.4738,3.35,Reticulum,star,162,G8II-III,Yellow giant,240
+beta_ret,Beta Ret,Beta Reticuli; β Ret,56.0481,-64.8067,3.85,Reticulum,star,100,K0IV,Orange subgiant,22
+alpha_hor,Alpha Hor,Alpha Horologii; α Hor,63.5002,-42.2944,3.86,Horologium,star,117,K2III,Orange giant,48
+alpha_cae,Alpha Cae,Alpha Caeli; α Cae,70.1407,-41.8637,4.45,Caelum,star,65,F2V,Yellow-white main sequence,4.6
+alpha_tel,Alpha Tel,Alpha Telescopii; α Tel,277.4205,-45.9685,3.49,Telescopium,star,250,B3IV,Blue-white subgiant,800
+gamma2_nor,Gamma2 Nor,Gamma2 Normae; γ2 Nor,245.2317,-50.1555,4.02,Norma,star,127,G8III,Yellow giant,49
+epsilon_nor,Epsilon Nor,Epsilon Normae; ε Nor,247.5623,-47.5547,4.47,Norma,star,400,B3V,Blue-white main sequence,2600
+alpha_cir,Alpha Cir,Alpha Circini; α Cir,220.3261,-64.9752,3.19,Circinus,star,54,A7Vp,White main sequence,10.5
+beta_cir,Beta Cir,Beta Circini; β Cir,228.4195,-58.8010,4.07,Circinus,star,97,A3Va,White main sequence,12.8
+gamma_mic,Gamma Mic,Gamma Microscopii; γ Mic,316.4863,-32.2579,4.67,Microscopium,star,224,G7III,Yellow giant,73
+epsilon_mic,Epsilon Mic,Epsilon Microscopii; ε Mic,321.6073,-32.1722,4.71,Microscopium,star,166,A1V,White main sequence,22
+gamma_vel,Gamma Vel,Gamma Velorum; γ Vel; Regor,122.3834,-47.3368,1.78,Vela,star,1100,WC8,Blue Wolf-Rayet star,170000
+epsilon_cru,Epsilon Cru,Epsilon Crucis; ε Cru,185.3401,-60.4013,3.59,Crux,star,228,K3III,Orange giant,4700
+achird,Achird,Eta Cassiopeiae; η Cas,12.2763,57.8165,3.44,Cassiopeia,star,19.4,G0V,Yellow main sequence (Sun-like),1.3
+fulu,Fulu,Zeta Cassiopeiae; ζ Cas,14.1662,53.8969,3.66,Cassiopeia,star,600,B2IV,Blue-white subgiant,6300
+kappa_cas,Kappa Cas,Kappa Cassiopeiae; κ Cas,8.2500,62.9319,4.16,Cassiopeia,star,4000,B1Ia,Blue supergiant,302000
+theta_cas,Theta Cas,Theta Cassiopeiae; θ Cas,17.1465,55.1500,4.33,Cassiopeia,star,137,A7V,White main sequence,18
+iota_cas,Iota Cas,Iota Cassiopeiae; ι Cas,36.4866,67.4023,4.52,Cassiopeia,star,142,A5p,White main sequence,37
+rho_cas,Rho Cas,Rho Cassiopeiae; ρ Cas,356.9474,57.4990,4.54,Cassiopeia,star,11650,G2Ia0e,Yellow hypergiant,530000
+mu_cas,Mu Cas,Mu Cassiopeiae; μ Cas; Marfak,19.5222,54.9233,5.17,Cassiopeia,star,24.6,G5Vb,Yellow main sequence,0.44
+upsilon2_cas,Upsilon2 Cas,Upsilon2 Cassiopeiae; υ2 Cas; Castula,9.2430,59.1811,4.63,Cassiopeia,star,195,G8III,Yellow giant,160
+sigma_cas,Sigma Cas,Sigma Cassiopeiae; σ Cas,358.2972,55.7648,4.88,Cassiopeia,star,5000,B1V,Blue-white main sequence,28000
+phi_cas,Phi Cas,Phi Cassiopeiae; φ Cas,18.4379,58.2317,4.98,Cassiopeia,star,6000,F0Ia,Yellow-white supergiant,270000
+chi_cas,Chi Cas,Chi Cassiopeiae; χ Cas,21.4764,59.2322,4.70,Cassiopeia,star,195,G9IIIb,Yellow giant,100
+psi_cas,Psi Cas,Psi Cassiopeiae; ψ Cas,22.4696,68.1300,4.73,Cassiopeia,star,193,K0III,Orange giant,70
+omega_cas,Omega Cas,Omega Cassiopeiae; ω Cas,36.8623,68.6856,4.99,Cassiopeia,star,190,B8III,Blue-white giant,600
+fifty_cas,50 Cas,50 Cassiopeiae,29.1752,72.4211,3.98,Cassiopeia,star,158,A2V,White main sequence,66
+delta_and,Delta And,Delta Andromedae; δ And; Sadiradra,9.8321,30.8611,3.27,Andromeda,star,101,K3III,Orange giant,68
+51_and,51 And,51 Andromedae; Nembus,27.8649,48.6281,3.57,Andromeda,star,177,K3III,Orange giant,270
+mu_and,Mu And,Mu Andromedae; μ And,14.2877,38.4994,3.87,Andromeda,star,136,A5V,White main sequence,22
+nu_and,Nu And,Nu Andromedae; ν And,12.4530,41.0787,4.53,Andromeda,star,680,B5V,Blue-white main sequence,3600
+upsilon_and,Upsilon And,Upsilon Andromedae; υ And; Titawin,24.1993,41.4055,4.09,Andromeda,star,44,F9V,Yellow-white main sequence,3.6
+lambda_and,Lambda And,Lambda Andromedae; λ And,355.6776,46.4582,3.82,Andromeda,star,86,G8III-IV,Yellow giant,27
+kappa_and,Kappa And,Kappa Andromedae; κ And,355.5126,44.3341,4.14,Andromeda,star,168,B9IVn,Blue-white subgiant,110
+iota_and,Iota And,Iota Andromedae; ι And,353.7849,43.2680,4.29,Andromeda,star,503,B8V,Blue-white main sequence,1900
+omicron_and,Omicron And,Omicron Andromedae; ο And,344.6649,42.3261,3.62,Andromeda,star,692,B6IIIe,Blue-white giant,7200
+phi_and,Phi And,Phi Andromedae; φ And,17.5811,47.2420,4.25,Andromeda,star,730,B5III,Blue-white giant,4500

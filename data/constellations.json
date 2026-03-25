@@ -1,0 +1,322 @@
+{
+  "Orion": {
+    "abbr": "Ori",
+    "label_ra_deg": 83.5,
+    "label_dec_deg": -1.5
+  },
+  "Crux": {
+    "abbr": "Cru",
+    "label_ra_deg": 185.0,
+    "label_dec_deg": -62.0
+  },
+  "Canis Major": {
+    "abbr": "CMa",
+    "label_ra_deg": 104.0,
+    "label_dec_deg": -23.0
+  },
+  "Canis Minor": {
+    "abbr": "CMi",
+    "label_ra_deg": 115.0,
+    "label_dec_deg": 3.0
+  },
+  "Taurus": {
+    "abbr": "Tau",
+    "label_ra_deg": 72.0,
+    "label_dec_deg": 20.0
+  },
+  "Gemini": {
+    "abbr": "Gem",
+    "label_ra_deg": 107.0,
+    "label_dec_deg": 24.0
+  },
+  "Lyra": {
+    "abbr": "Lyr",
+    "label_ra_deg": 282.5,
+    "label_dec_deg": 35.0
+  },
+  "Cygnus": {
+    "abbr": "Cyg",
+    "label_ra_deg": 304.0,
+    "label_dec_deg": 38.0
+  },
+  "Aquila": {
+    "abbr": "Aql",
+    "label_ra_deg": 297.0,
+    "label_dec_deg": 6.0
+  },
+  "Bootes": {
+    "abbr": "Boo",
+    "label_ra_deg": 218.0,
+    "label_dec_deg": 31.0
+  },
+  "Leo": {
+    "abbr": "Leo",
+    "label_ra_deg": 162.0,
+    "label_dec_deg": 18.0
+  },
+  "Virgo": {
+    "abbr": "Vir",
+    "label_ra_deg": 190.0,
+    "label_dec_deg": -2.0
+  },
+  "Carina": {
+    "abbr": "Car",
+    "label_ra_deg": 118.0,
+    "label_dec_deg": -61.0
+  },
+  "Centaurus": {
+    "abbr": "Cen",
+    "label_ra_deg": 215.0,
+    "label_dec_deg": -55.0
+  },
+  "Ursa Major": {
+    "abbr": "UMa",
+    "label_ra_deg": 185.0,
+    "label_dec_deg": 56.0
+  },
+  "Ursa Minor": {
+    "abbr": "UMi",
+    "label_ra_deg": 230.0,
+    "label_dec_deg": 80.0
+  },
+  "Pegasus": {
+    "abbr": "Peg",
+    "label_ra_deg": 340.0,
+    "label_dec_deg": 22.0
+  },
+  "Andromeda": {
+    "abbr": "And",
+    "label_ra_deg": 20.0,
+    "label_dec_deg": 37.0
+  },
+  "Sagittarius": {
+    "abbr": "Sgr",
+    "label_ra_deg": 280.0,
+    "label_dec_deg": -32.0
+  },
+  "Perseus": {
+    "abbr": "Per",
+    "label_ra_deg": 49.0,
+    "label_dec_deg": 43.0
+  },
+  "Aries": {
+    "abbr": "Ari",
+    "label_ra_deg": 30.0,
+    "label_dec_deg": 21.0
+  },
+  "Scorpius": {
+    "abbr": "Sco",
+    "label_ra_deg": 250.0,
+    "label_dec_deg": -31.0
+  },
+  "Ara": {
+    "abbr": "Ara",
+    "label_ra_deg": 263.0,
+    "label_dec_deg": -53.0
+  },
+  "Auriga": {
+    "abbr": "Aur",
+    "label_ra_deg": 82.0,
+    "label_dec_deg": 39.0
+  },
+  "Capricornus": {
+    "abbr": "Cap",
+    "label_ra_deg": 315.0,
+    "label_dec_deg": -17.0
+  },
+  "Cassiopeia": {
+    "abbr": "Cas",
+    "label_ra_deg": 15.0,
+    "label_dec_deg": 63.0
+  },
+  "Cetus": {
+    "abbr": "Cet",
+    "label_ra_deg": 30.0,
+    "label_dec_deg": -8.0
+  },
+  "Columba": {
+    "abbr": "Col",
+    "label_ra_deg": 86.0,
+    "label_dec_deg": -37.0
+  },
+  "Corona Australis": {
+    "abbr": "CrA",
+    "label_ra_deg": 287.0,
+    "label_dec_deg": -41.0
+  },
+  "Corona Borealis": {
+    "abbr": "CrB",
+    "label_ra_deg": 233.0,
+    "label_dec_deg": 30.0
+  },
+  "Corvus": {
+    "abbr": "Crv",
+    "label_ra_deg": 186.0,
+    "label_dec_deg": -20.0
+  },
+  "Delphinus": {
+    "abbr": "Del",
+    "label_ra_deg": 310.0,
+    "label_dec_deg": 13.0
+  },
+  "Draco": {
+    "abbr": "Dra",
+    "label_ra_deg": 255.0,
+    "label_dec_deg": 58.0
+  },
+  "Eridanus": {
+    "abbr": "Eri",
+    "label_ra_deg": 50.0,
+    "label_dec_deg": -30.0
+  },
+  "Grus": {
+    "abbr": "Gru",
+    "label_ra_deg": 335.0,
+    "label_dec_deg": -44.0
+  },
+  "Hercules": {
+    "abbr": "Her",
+    "label_ra_deg": 254.0,
+    "label_dec_deg": 32.0
+  },
+  "Lepus": {
+    "abbr": "Lep",
+    "label_ra_deg": 82.0,
+    "label_dec_deg": -21.0
+  },
+  "Libra": {
+    "abbr": "Lib",
+    "label_ra_deg": 230.0,
+    "label_dec_deg": -18.0
+  },
+  "Lupus": {
+    "abbr": "Lup",
+    "label_ra_deg": 222.0,
+    "label_dec_deg": -47.0
+  },
+  "Musca": {
+    "abbr": "Mus",
+    "label_ra_deg": 190.0,
+    "label_dec_deg": -71.0
+  },
+  "Ophiuchus": {
+    "abbr": "Oph",
+    "label_ra_deg": 262.0,
+    "label_dec_deg": 0.0
+  },
+  "Pavo": {
+    "abbr": "Pav",
+    "label_ra_deg": 308.0,
+    "label_dec_deg": -62.0
+  },
+  "Phoenix": {
+    "abbr": "Phe",
+    "label_ra_deg": 12.0,
+    "label_dec_deg": -44.0
+  },
+  "Piscis Austrinus": {
+    "abbr": "PsA",
+    "label_ra_deg": 344.0,
+    "label_dec_deg": -33.0
+  },
+  "Puppis": {
+    "abbr": "Pup",
+    "label_ra_deg": 117.0,
+    "label_dec_deg": -36.0
+  },
+  "Triangulum Australe": {
+    "abbr": "TrA",
+    "label_ra_deg": 248.0,
+    "label_dec_deg": -67.0
+  },
+  "Vela": {
+    "abbr": "Vel",
+    "label_ra_deg": 136.0,
+    "label_dec_deg": -52.0
+  },
+  "Tucana": {
+    "abbr": "Tuc",
+    "label_ra_deg": 342.0,
+    "label_dec_deg": -62.0
+  },
+  "Hydrus": {
+    "abbr": "Hyi",
+    "label_ra_deg": 30.0,
+    "label_dec_deg": -72.0
+  },
+  "Octans": {
+    "abbr": "Oct",
+    "label_ra_deg": 335.0,
+    "label_dec_deg": -82.0
+  },
+  "Pictor": {
+    "abbr": "Pic",
+    "label_ra_deg": 94.0,
+    "label_dec_deg": -57.0
+  },
+  "Dorado": {
+    "abbr": "Dor",
+    "label_ra_deg": 76.0,
+    "label_dec_deg": -58.0
+  },
+  "Sculptor": {
+    "abbr": "Scl",
+    "label_ra_deg": 2.0,
+    "label_dec_deg": -34.0
+  },
+  "Fornax": {
+    "abbr": "For",
+    "label_ra_deg": 46.0,
+    "label_dec_deg": -31.0
+  },
+  "Indus": {
+    "abbr": "Ind",
+    "label_ra_deg": 315.0,
+    "label_dec_deg": -53.0
+  },
+  "Volans": {
+    "abbr": "Vol",
+    "label_ra_deg": 118.0,
+    "label_dec_deg": -70.0
+  },
+  "Chamaeleon": {
+    "abbr": "Cha",
+    "label_ra_deg": 143.0,
+    "label_dec_deg": -78.0
+  },
+  "Reticulum": {
+    "abbr": "Ret",
+    "label_ra_deg": 60.0,
+    "label_dec_deg": -63.0
+  },
+  "Horologium": {
+    "abbr": "Hor",
+    "label_ra_deg": 63.0,
+    "label_dec_deg": -44.0
+  },
+  "Caelum": {
+    "abbr": "Cae",
+    "label_ra_deg": 70.0,
+    "label_dec_deg": -43.0
+  },
+  "Telescopium": {
+    "abbr": "Tel",
+    "label_ra_deg": 277.0,
+    "label_dec_deg": -48.0
+  },
+  "Norma": {
+    "abbr": "Nor",
+    "label_ra_deg": 246.0,
+    "label_dec_deg": -50.0
+  },
+  "Circinus": {
+    "abbr": "Cir",
+    "label_ra_deg": 224.0,
+    "label_dec_deg": -63.0
+  },
+  "Microscopium": {
+    "abbr": "Mic",
+    "label_ra_deg": 319.0,
+    "label_dec_deg": -34.0
+  }
+}
