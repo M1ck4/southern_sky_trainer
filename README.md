@@ -147,7 +147,7 @@ This makes it useful for:
 * comparing sky relationships visually
 * learning rough star-hop distances between objects
 
-The star map renders a dashed line between the two selected objects and displays the angular distance directly on the map. fileciteturn7file0 fileciteturn8file0
+The star map renders a dashed line between the two selected objects and displays the angular distance directly on the map.
 
 ### Path Tool
 
@@ -159,7 +159,7 @@ This is useful for:
 * breaking a larger navigation task into smaller steps
 * learning object relationships as connected paths instead of isolated points
 
-The map renders numbered stops, dashed connecting segments, and per-leg angular distances, making it a practical learning aid for route-style sky navigation. fileciteturn7file0turn8file2
+The map renders numbered stops, dashed connecting segments, and per-leg angular distances, making it a practical learning aid for route-style sky navigation.
 
 ### Identify Tool
 
@@ -171,7 +171,7 @@ This supports:
 * relating empty sky positions to nearby known objects
 * learning how chart coordinates map to practical sky locations
 
-The star map emits sky coordinates for clicked positions specifically to support this style of interaction. fileciteturn7file0
+The star map emits sky coordinates for clicked positions specifically to support this style of interaction.
 
 ### Quiz Features
 
@@ -188,7 +188,7 @@ Supported quiz styles include:
 * finding an object by alias
 * finding any object in a named constellation
 
-The quiz engine also includes repeat prevention and spaced repetition behavior for missed objects, helping practice become more structured over time. fileciteturn6file5
+The quiz engine also includes repeat prevention and spaced repetition behavior for missed objects, helping practice become more structured over time.
 
 ### View Controls and Display Toggles
 
@@ -204,7 +204,7 @@ These include:
 * optional labels and hover information
 * time-aware polar and horizon views
 
-These controls matter because they let the user simplify, isolate, and reframe the sky rather than seeing everything at once. The result is a more flexible learning environment. fileciteturn7file0turn6file1
+These controls matter because they let the user simplify, isolate, and reframe the sky rather than seeing everything at once. The result is a more flexible learning environment.
 
 ### Rendering and Visual Learning Support
 
@@ -220,7 +220,7 @@ Examples include:
 * highlighted targets, answers, and selected objects
 * a horizon overlay and compass-based horizon grid in horizon mode
 
-These visual cues help turn the application into a practical recognition tool rather than only a data viewer. fileciteturn7file0turn8file9
+These visual cues help turn the application into a practical recognition tool rather than only a data viewer.
 
 ## Data Files
 
@@ -317,6 +317,28 @@ Contains quiz-related logic used for recognition and practice features.
 ### `star_map.py`
 
 Handles sky rendering, viewing modes, and related display behavior.
+
+## Screenshots
+
+The images below show some of the main ways the application can be used.
+
+### Horizon View with Path Tool
+
+This view shows the southern sky horizon mode with the path tool active, useful for building simple star-hop routes between objects.
+
+![Horizon View with Path Tool](doc/path_view.png)
+
+### Polar View
+
+This view shows the polar-style layout, useful for understanding sky structure from a southern polar perspective.
+
+![Polar View](doc/polar_view.png)
+
+### Quiz Mode
+
+This view shows the application in quiz mode, where the user is asked to identify a target object on the map.
+
+![Quiz Mode](doc/quiz_mode.png)
 
 ## Installation
 
