@@ -1,399 +1,367 @@
 # Southern Sky Trainer
 
-![Southern Sky Trainer Screenshot](doc/screenshot.png)
+An interactive desktop application for learning to navigate the night sky. Built for southern hemisphere observers, with a particular focus on the Australian sky.
 
-Southern Sky Trainer is a free and open source desktop application for learning the night sky.
+![Southern Sky Trainer — Chart View](doc/screenshot.png)
 
-It was created as a practical astronomy learning tool, focused on helping users become more familiar with stars, constellations, deep sky objects, sky position, and celestial coordinates through interactive exploration rather than static reference alone.
+Southern Sky Trainer teaches sky navigation through direct interaction rather than passive reference. A quiz system with spaced repetition asks you to locate stars, deep-sky objects, and constellations across three different sky projections. Explore mode provides measurement tools for angular distances, star-hopping chains, and coordinate identification. Every object in the catalogue carries physical data — distance, spectral type, luminosity — turning abstract dots into real objects at real distances in three-dimensional space.
 
-This repository contains the public release of that tool.
+---
 
-## Overview
+## Table of Contents
 
-Learning the sky is not only about memorizing names. It is also about recognition, orientation, repeated exposure, and slowly building an internal map of what belongs where. Southern Sky Trainer was built to support that process with a combination of chart-based learning, horizon-based viewing, quizzes, object matching, and coordinate-driven exploration.
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Sky Views](#sky-views)
+- [Quiz Mode](#quiz-mode)
+- [Explore Mode and Tools](#explore-mode-and-tools)
+- [Star Catalogue](#star-catalogue)
+- [Controls Reference](#controls-reference)
+- [Project Structure](#project-structure)
+- [Extending the Catalogue](#extending-the-catalogue)
+- [Technical Details](#technical-details)
+- [Licence](#licence)
 
-The standard chart view is intended as a general learning reference for right ascension and declination. The horizon mode adds a more grounded observational perspective by showing the sky relative to a fixed southern hemisphere observer position. Together, these modes support both abstract coordinate learning and more intuitive visual familiarity.
-
-The application is intended for hobbyists, learners, and anyone who wants a simple desktop tool for developing familiarity with the sky and building confidence with basic astronomical structure.
-
-## Scope
-
-This version of the application is especially suited to southern hemisphere sky learning in its horizon-based mode.
-
-The chart view functions as a general celestial reference for studying right ascension and declination. The horizon-based view is time-aware, but it does not currently detect or adapt to an individual user’s location automatically. Because of that, the horizon experience should be understood as using a fixed southern hemisphere perspective in its current form.
-
-## What the Application Helps You Learn
-
-Southern Sky Trainer is designed to help with several different parts of astronomy learning at once.
-
-It can be used to:
-
-* become familiar with the layout of stars and constellations
-* learn how right ascension and declination relate to sky position
-* recognize deep sky objects and where they sit relative to brighter stars
-* compare abstract chart structure with a horizon-based sky view
-* practice identifying objects through repetition and quiz-style interaction
-* build intuition about the sky rather than only reading labels from a book or map
-
-## Main Features
-
-* Standard star chart for learning right ascension and declination
-* Horizon mode with southern hemisphere sky orientation
-* Polar-style sky viewing support
-* Constellation support with line relationships
-* Deep sky object catalog support
-* Quiz and recognition features
-* Coordinate and object matching utilities
-* Desktop interface built with Python and PySide6
-* Data-driven catalogs that can be inspected and expanded
-
-## Viewing Modes
-
-The application includes multiple ways of viewing the sky, each serving a slightly different learning purpose.
-
-### Chart View
-
-The chart view works as a general celestial learning map. It is useful for studying the relationship between stars, constellations, and deep sky objects in terms of right ascension and declination.
-
-This view is especially helpful for:
-
-* learning the coordinate layout of the sky
-* understanding where objects sit relative to one another
-* building familiarity with the broader structure of the celestial sphere
-
-### Horizon View
-
-The horizon view is designed to represent the sky from an observer-based perspective rather than only as a coordinate chart.
-
-This mode is time-aware and updates according to the current system time, but it uses a fixed southern hemisphere observing perspective in this version of the application. It is therefore most useful for southern sky learning.
-
-This view is especially helpful for:
-
-* translating abstract chart knowledge into a more observational sky perspective
-* seeing what appears above the horizon
-* building intuition about where objects would sit in a sky-like layout
-
-### Polar View
-
-The polar-style view provides another way to examine sky layout and orientation. It can help reinforce spatial understanding by presenting the sky in a form that differs from the standard chart and horizon views.
-
-## Controls
-
-The application supports mouse-based navigation, keyboard shortcuts, and built-in interface controls.
-
-A summary of the controls is also available from the application's **About** screen.
-
-### Mouse Controls
-
-The main map supports direct mouse interaction for navigation and selection.
-
-* **Scroll wheel**: zoom in and out
-* **Drag**: pan the map
-* **Double-click**: centre the view on an object
-* **Left click**: select an object, or click empty sky for coordinate lookup when using the Identify tool
-
-In horizon view, dragging changes the viewing direction rather than only shifting a flat chart. This makes the horizon mode feel more like looking around the sky from a fixed observing position.
-
-### Keyboard Controls
-
-The application also includes keyboard shortcuts for visibility toggles, navigation, and quiz workflow.
-
-* **1**: toggle stars
-* **2**: toggle deep sky objects
-* **3**: toggle constellation lines
-* **R**: reset the view
-* **+ / -**: zoom in and out
-* **Arrow keys**: pan the map
-* **Ctrl+N**: load a new question
-* **Ctrl+A**: show the answer
-* **Ctrl+E**: toggle Explore and Quiz mode
-
-In horizon view, the arrow keys rotate the facing direction, and the scroll wheel changes the field of view.
-
-### On-Screen Controls
-
-The interface includes built-in controls for switching between application modes, view modes, and explore tools.
-
-These include:
-
-* Explore and Quiz mode switching
-* sky view switching between chart, polar, and horizon views
-* explore tool selection for Select, Distance, Path, and Identify
-* quiz controls such as New Question, Show Answer, and Reset
-* visibility toggles for stars, deep sky objects, and constellation lines
-
-Together these controls make the application useful not only as a viewer, but as an active astronomy learning environment.
-
-## Tools and Learning Utilities
-
-The application is more than a static chart. In explore mode it includes practical tools for inspecting the sky, measuring relationships between objects, and building navigation familiarity.
-
-### Select Tool
-
-The select tool is the simplest inspection mode. It allows the user to click on visible objects and view information about them directly.
-
-This is useful for:
-
-* learning object names through direct interaction
-* checking what constellation an object belongs to
-* seeing magnitude and object type information
-* building familiarity by clicking through the sky rather than only reading a chart
-
-### Distance Tool
-
-The distance tool allows the user to click two objects and measure the angular separation between them.
-
-This makes it useful for:
-
-* understanding how far apart stars or deep sky objects are in angular terms
-* comparing sky relationships visually
-* learning rough star-hop distances between objects
-
-The star map renders a dashed line between the two selected objects and displays the angular distance directly on the map.
-
-### Path Tool
-
-The path tool allows the user to build a multi-step chain between objects, effectively creating a simple star-hop route across the map.
-
-This is useful for:
-
-* planning or rehearsing a hop between visible targets
-* breaking a larger navigation task into smaller steps
-* learning object relationships as connected paths instead of isolated points
-
-The map renders numbered stops, dashed connecting segments, and per-leg angular distances, making it a practical learning aid for route-style sky navigation.
-
-### Identify Tool
-
-The identify tool allows the user to click anywhere on the sky rather than only on an existing object.
-
-This supports:
-
-* checking sky position in right ascension and declination
-* relating empty sky positions to nearby known objects
-* learning how chart coordinates map to practical sky locations
-
-The star map emits sky coordinates for clicked positions specifically to support this style of interaction.
-
-### Quiz Features
-
-The quiz system is designed to reinforce memory through repeated exposure and recall rather than passive viewing alone.
-
-Supported quiz styles include:
-
-* finding a named star
-* finding a star by coordinates
-* finding a named deep sky object
-* finding a deep sky object by coordinates
-* finding any named object
-* finding any object by coordinates
-* finding an object by alias
-* finding any object in a named constellation
-
-The quiz engine also includes repeat prevention and spaced repetition behavior for missed objects, helping practice become more structured over time.
-
-### View Controls and Display Toggles
-
-The map itself includes several built-in controls that function as practical learning aids.
-
-These include:
-
-* pan and zoom controls
-* click selection and double-click centering
-* star visibility toggle
-* deep sky visibility toggle
-* constellation line toggle
-* optional labels and hover information
-* time-aware polar and horizon views
-
-These controls matter because they let the user simplify, isolate, and reframe the sky rather than seeing everything at once. The result is a more flexible learning environment.
-
-### Rendering and Visual Learning Support
-
-The map is also designed to communicate information visually, not only textually.
-
-Examples include:
-
-* different symbol shapes for different deep sky object types
-* magnitude-based star sizing
-* constellation line drawing
-* constellation labels
-* hover descriptions
-* highlighted targets, answers, and selected objects
-* a horizon overlay and compass-based horizon grid in horizon mode
-
-These visual cues help turn the application into a practical recognition tool rather than only a data viewer.
-
-## Data Files
-
-A core strength of the project is that key astronomical content is stored in plain data files rather than being hard-coded into the application.
-
-This makes the project easier to inspect, easier to understand, and easier to expand.
-
-### CSV Catalog Files
-
-The CSV files in the `data/` directory can be edited and extended manually.
-
-This means the application can be expanded without major code changes. Users who want to add more entries can do so directly in the catalog files.
-
-Examples include:
-
-* `stars.csv`, for adding or refining star entries
-* `deep_sky.csv`, for adding or refining deep sky object entries
-
-If you are comfortable working with CSV files, these catalogs can serve as straightforward, editable data sources for extending the tool.
-
-This is one of the practical strengths of the project. The learning content is not fixed forever. It can grow.
-
-### JSON Configuration Files
-
-The JSON files in the `data/` directory define constellation relationships and supporting structures used by the application.
-
-These include:
-
-* `constellation_lines.json`, which stores line connections used for constellation drawing
-* `constellations.json`, which stores constellation-related information used by the program
-
-These files can also be reviewed or modified if constellation content needs refinement or extension.
-
-## Customization
-
-Because the application is partially data-driven, it can be customized in several useful ways without requiring a full redesign.
-
-Possible areas for customization include:
-
-* expanding the star catalog
-* expanding the deep sky catalog
-* refining constellation line definitions
-* adapting the data for alternative learning sets
-* using the project as a base for related astronomy learning tools
-* modifying quiz behavior or matching logic for your own learning goals
-
-## Repository Structure
-
-A typical repository layout is shown below:
-
-```text
-main.py
-app_window.py
-catalog_loader.py
-coordinates.py
-object_matcher.py
-quiz_engine.py
-star_map.py
-requirements.txt
-README.md
-data/
-    stars.csv
-    deep_sky.csv
-    constellation_lines.json
-    constellations.json
-```
-
-## File Overview
-
-### `main.py`
-
-Application entry point.
-
-### `app_window.py`
-
-Main desktop window and interface-level application behavior.
-
-### `catalog_loader.py`
-
-Loads astronomical catalog and configuration data from the external files in the `data/` directory.
-
-### `coordinates.py`
-
-Contains coordinate-related calculations and supporting astronomical positioning logic.
-
-### `object_matcher.py`
-
-Supports object matching and object lookup style functionality used by the learning tools.
-
-### `quiz_engine.py`
-
-Contains quiz-related logic used for recognition and practice features.
-
-### `star_map.py`
-
-Handles sky rendering, viewing modes, and related display behavior.
-
-## Screenshots
-
-The images below show some of the main ways the application can be used.
-
-### Horizon View with Path Tool
-
-This view shows the southern sky horizon mode with the path tool active, useful for building simple star-hop routes between objects.
-
-![Horizon View with Path Tool](doc/path_view.png)
-
-### Polar View
-
-This view shows the polar-style layout, useful for understanding sky structure from a southern polar perspective.
-
-![Polar View](doc/polar_view.png)
-
-### Quiz Mode
-
-This view shows the application in quiz mode, where the user is asked to identify a target object on the map.
-
-![Quiz Mode](doc/quiz_mode.png)
+---
 
 ## Installation
 
-Clone the repository and install the required dependencies:
+### Prerequisites
+
+- Python 3.10 or later
+- pip (Python package manager)
+- A display resolution of 1366×768 or higher is recommended
+
+### Setup
+
+Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/southern-sky-trainer.git
+cd southern-sky-trainer
+```
+
+Install the required dependency:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Running the Application
+The only dependency is `PySide6>=6.6` (Qt for Python). No internet connection, accounts, API keys, or telemetry are involved at any point.
 
-Start the program with:
+### Verify Installation
 
 ```bash
 python main.py
 ```
 
-## Intended Audience
+The application window should open with the chart view loaded and a quiz question displayed. If PySide6 is not installed, you will see an `ImportError` — run the pip install step above.
 
-This project may be useful to:
+### Platform Notes
 
-* learners developing familiarity with the sky
-* southern hemisphere hobbyists who want a more relevant horizon-style perspective
-* people who want to study right ascension and declination in a practical way
-* developers interested in a small open source astronomy project built with Python
-* anyone who wants to study the sky through interactive exploration and repetition
-
-## Project Status
-
-This project is released as a working open source tool.
-
-It was originally created for personal use and is being shared publicly in case it is useful to others. It may or may not receive future updates. This repository should be understood as a functional public release rather than a promise of active long-term development.
-
-## License
-
-This project is free and open source.
-
-It is released under the MIT License. See the `LICENSE` file for details..
-
-## Notes
-
-Southern Sky Trainer is best understood as a public release of a practical astronomy learning tool.
-
-It is not presented as a commercial platform or a heavily maintained product. It is a focused educational utility, shared openly because it proved useful in helping build familiarity with the night sky.
-
-It is also intentionally simple in an important way. The catalogs are visible. The data can be edited. The structure can be followed. It is a tool that can be used directly, but it can also be learned from.
-
-## Acknowledgment
-
-Astronomy invites patience, pattern recognition, and perspective. This project was one small way of learning those patterns more directly.
-
-If it helps someone else become more familiar with the sky above them, then it has served its purpose.
+The application has been developed and tested on Windows 10/11 with Python 3.12. It should work on macOS and Linux with PySide6 support, though the timezone auto-detection and window geometry may behave slightly differently across platforms.
 
 ---
 
-Made and shared in the spirit of curiosity.
+## Quick Start
+
+1. Launch the application with `python main.py`
+2. The chart view opens with a quiz question in the top bar — something like "Find Sirius, a star in Canis Major"
+3. Click on the star map to answer. Green ring means correct, red ring means wrong
+4. Use the scroll wheel to zoom, drag to pan, double-click to centre on an object
+5. Switch to **Explore** mode using the button in the side panel to browse freely
+6. Switch between **Chart**, **Polar**, and **Horizon** views using the sky view buttons
+7. In horizon view, press **S** (south) to face the Southern Cross, or **N** to see the northern sky
+
+---
+
+## Sky Views
+
+### Chart (Equatorial Projection)
+
+The default view. A flat rectangular projection of the entire sky using Right Ascension (horizontal) and Declination (vertical) as axes.
+
+- RA increases right to left (matching the astronomical convention for sky charts)
+- Horizontal scrolling wraps seamlessly — the sky is continuous
+- Vertical scrolling extends 30° past each pole for comfortable viewing of polar objects
+- Zoom from 1× to 25× with the scroll wheel or +/− keys
+- Grid labels in warm amber, constellation lines in blue, coordinate axes clearly separated
+
+This is the study view for learning the RA/Dec coordinate system and understanding how constellations relate to each other across the full sky.
+
+### Horizon (Local Sky)
+
+![Horizon View](doc/path_view.png)
+
+A real-time view of the sky from Brisbane, Queensland, as it appears right now. The horizon sits at the bottom with altitude lines above. Compass directions are labelled along the top.
+
+- Face any compass direction using the N/E/S/W buttons or by dragging
+- Objects below the horizon fade into a darkened ground overlay
+- Field of view adjustable from 30° (telescope-like) to 180° (full hemisphere)
+- Updates every 30 seconds to track Earth's rotation
+- Southern hemisphere orientation — Orion appears "upside down" compared to northern hemisphere charts, exactly as it looks from Brisbane
+
+This is the view you hold up against the real sky outside. Face south, and the Southern Cross sits where it should. Face north-east, and Orion hangs above the horizon as it does on a March evening from Queensland.
+
+### Polar (Planisphere)
+
+![Polar View](doc/polar_view.png)
+
+A south-centred stereographic projection, rotated to the current Local Sidereal Time.
+
+- Declination rings show distance from the south celestial pole
+- Hour angle spokes radiate outward with RA labels
+- A dashed circle marks the horizon for the observer's latitude
+- The SCP (South Celestial Pole) is marked at the centre
+- Stars that never rise from Brisbane (Dec > +62.5°) are filtered out
+- Zoom and pan supported
+
+This view shows everything above the horizon at once. It is particularly useful for planning observing sessions and understanding which constellations are circumpolar from your latitude.
+
+---
+
+## Quiz Mode
+
+![Quiz Mode](doc/quiz_mode.png)
+
+The quiz system tests your ability to locate objects on the sky map. Questions appear in the top bar with score and streak tracking.
+
+### Question Types
+
+| Mode | Example |
+|------|---------|
+| Find by name | "Find Sirius, a star in Canis Major" |
+| Find by coordinates | "Find the star at RA 06h 45m 09s, Dec −16° 42' 58" (in Canis Major)" |
+| Find a named DSO | "Find the Orion Nebula, a nebula in Orion" |
+| Find a DSO by coordinates | "Find the object at RA 05h 35m 17s, Dec −05° 23' 28" (in Orion)" |
+| Find any object | "Find Alphard, a star in Hydra" |
+| Find by alias | "Find M42" |
+| Find in constellation | "Find any object in Scorpius" |
+| Find any by coordinates | Combined star and DSO coordinate questions |
+
+### Spaced Repetition
+
+Objects you answer incorrectly are tracked and revisited more frequently. The system gives a 40% chance of re-asking a previously missed object, weighted by how many times you have missed it. The last 12 objects are excluded from selection to prevent immediate repetition.
+
+### Spoiler Prevention
+
+The target info panel adapts to the question type. For name-based questions, coordinates are hidden until you answer. For coordinate-based questions, the name and aliases are hidden. After answering, all details are revealed along with the four nearest catalogue objects and their angular distances.
+
+---
+
+## Explore Mode and Tools
+
+Switch to Explore mode with the side panel button or Ctrl+E. Four tools are available via icon buttons:
+
+### ◎ Select
+
+Click any object to view its complete details in the side panel:
+
+- Name, type, constellation, and magnitude with brightness description
+- RA/Dec coordinates
+- Known aliases (e.g. "Alpha Canis Majoris, α CMa")
+- Distance from Earth in light years
+- Spectral type and human-readable colour description
+- Luminosity relative to the Sun
+- Live transit time — when the object crosses the meridian (highest point in the sky)
+- The four nearest catalogue objects with angular distances
+
+### ↔ Distance
+
+Click two objects to measure the angular separation between them.
+
+The side panel displays:
+- Angular distance in degrees
+- Hand-at-arm's-length analogy (pinky width, fist width, hand span)
+- Compass direction (e.g. "north and east")
+- RA and Dec differences
+- Binocular field-of-view equivalence ("fits in a binocular field")
+
+A dashed gold line is drawn between the two objects on the map with the distance labelled at the midpoint. Click the anchor object again to clear the measurement.
+
+### ⋯ Path
+
+Build a star-hopping chain by clicking objects in sequence. The map draws numbered green nodes with dashed connecting lines.
+
+The side panel shows:
+- Total angular path across the sky
+- Total 3D distance through space in light years
+- Per-leg breakdown with distance from Earth for each stop
+- Average and longest leg distances
+- Hand measurement analogy for the total path
+
+Click the last stop to undo it. Click the first stop to clear the entire chain. Useful for planning routes like "Acrux → Mimosa → Hadar → Rigil Kentaurus" and understanding both the apparent and real distances involved.
+
+### ⊕ Identify
+
+Click anywhere on the sky — including empty space with no object — to see:
+- RA/Dec coordinates of the clicked position
+- Nearest constellation
+- Nearest star with angular distance
+- Nearest deep-sky object with angular distance
+- Count of catalogue objects within 5°
+- The five nearest objects listed in the nearby panel
+
+This is particularly useful for learning coordinates by pointing at random positions and checking what you are near.
+
+---
+
+## Star Catalogue
+
+### Stars
+
+313 named stars across 65 constellations. Every star includes:
+
+| Field | Description | Range |
+|-------|-------------|-------|
+| Distance | Light years from Earth | 4.4 ly (Rigil Kentaurus) to 11,650 ly (Rho Cassiopeiae) |
+| Spectral type | MK classification | O9.5 through M7 |
+| Colour description | Human-readable | "Blue supergiant", "Red giant", "Yellow main sequence (Sun-like)" |
+| Luminosity | Relative to the Sun | 0.44× (Mu Cassiopeiae) to 813,000× (Naos) |
+
+The catalogue has strong southern hemisphere coverage: Crux (5-star cross), Centaurus (9 stars), Scorpius (15 stars with full scorpion figure), Carina, Vela, Puppis, Tucana, Hydrus, Octans, Dorado, Musca, Chamaeleon, and many more.
+
+25 constellations have fully-drawn stick figures with enough stars to make the patterns recognisable and learnable.
+
+### Deep-Sky Objects
+
+40 objects including emission nebulae, planetary nebulae, supernova remnants, dark nebulae, globular clusters, open clusters, and galaxies. Each with distance, structural type, description, and physical notes (size, star count).
+
+Objects range from the Coalsack Nebula at 600 light years to the Sombrero Galaxy at 31 million light years. Rendered with distinct symbols: ellipses for galaxies, crosshairs for clusters, nested circles for planetary nebulae, squares for dark nebulae.
+
+---
+
+## Controls Reference
+
+### Mouse
+
+| Action | Chart | Horizon | Polar |
+|--------|-------|---------|-------|
+| Scroll wheel | Zoom in/out | Adjust field of view | Zoom in/out |
+| Left-click drag | Pan RA/Dec | Look around (facing and altitude) | Pan chart |
+| Left click on object | Select or answer quiz | Select or answer quiz | Select or answer quiz |
+| Double-click | Centre on object | Snap facing to object | Centre on object |
+| Middle/right drag | Pan | Pan | Pan |
+
+### Keyboard
+
+| Key | Function |
+|-----|----------|
+| Arrow keys | Pan (chart), rotate facing and look up/down (horizon) |
+| + / − | Zoom in/out (all views) |
+| R | Reset view to defaults |
+| 1 | Toggle star visibility |
+| 2 | Toggle deep-sky object visibility |
+| 3 | Toggle constellation line visibility |
+| Ctrl+E | Toggle between Quiz and Explore mode |
+| Ctrl+N | Load a new quiz question |
+| Ctrl+A | Reveal the answer |
+
+### Side Panel
+
+- **Switch to Quiz / Explore** — mode toggle
+- **Chart / Polar / Horizon** — sky view buttons
+- **N / E / S / W** — facing direction (horizon view only)
+- **◎ ↔ ⋯ ⊕** — explore tool selection (explore mode only)
+- **New Question / Show Answer / Reset** — quiz controls (quiz mode only)
+
+---
+
+## Project Structure
+
+```
+southern-sky-trainer/
+├── main.py                  Application entry point
+├── app_window.py            Main window, side panel, action bar, quiz and explore UI
+├── star_map.py              Interactive map widget with three projections and rendering
+├── quiz_engine.py           Quiz logic with eight modes and spaced repetition
+├── coordinates.py           Coordinate mathematics: JD, GMST, LST, alt/az, projections
+├── object_matcher.py        Answer matching by ID, name, angular proximity, constellation
+├── catalog_loader.py        CSV and JSON loading with data normalisation
+├── requirements.txt         Dependencies (PySide6 only)
+├── README.md
+├── LICENSE
+├── data/
+│   ├── stars.csv            313 stars with coordinates and physical properties
+│   ├── deep_sky.csv         40 deep-sky objects with coordinates and descriptions
+│   ├── constellation_lines.json    Line segment patterns for 63 constellations
+│   └── constellations.json  Constellation metadata with abbreviations and label positions
+└── doc/
+    ├── screenshot.png       Chart view screenshot
+    ├── path_view.png        Horizon view with path tool
+    ├── polar_view.png       Polar planisphere view
+    └── quiz_mode.png        Quiz mode screenshot
+```
+
+---
+
+## Extending the Catalogue
+
+The catalogue is entirely data-driven. All astronomical content lives in CSV and JSON files. No code changes are needed to add objects.
+
+### Adding a Star
+
+Append a row to `data/stars.csv`:
+
+```csv
+my_star,My Star,"Alpha Whatever; α Wha",120.5,-45.3,3.50,Centaurus,star,200,B8III,Blue-white giant,1500
+```
+
+The columns are: `id`, `name`, `aliases` (semicolon-separated), `ra_deg`, `dec_deg`, `magnitude`, `constellation`, `object_type`, `distance_ly`, `spectral_type`, `colour_desc`, `luminosity_solar`.
+
+The star will appear on the map immediately. The quiz system will include it in questions.
+
+### Adding Constellation Lines
+
+Edit `data/constellation_lines.json`. Each constellation maps to a list of line segments, where each segment is a pair of star IDs:
+
+```json
+{
+  "My Constellation": [
+    ["star_id_1", "star_id_2"],
+    ["star_id_2", "star_id_3"]
+  ]
+}
+```
+
+Star IDs must match the `id` column in `stars.csv`.
+
+### Adding a Deep-Sky Object
+
+Append a row to `data/deep_sky.csv` following the same column structure. Supported object types: `nebula`, `planetary_nebula`, `supernova_remnant`, `dark_nebula`, `globular_cluster`, `open_cluster`, `galaxy`, `star_system`.
+
+Each deep-sky object can include `distance_ly`, `spectral_type`, `colour_desc`, and `notes` for physical descriptions.
+
+---
+
+## Technical Details
+
+### Coordinate System
+
+All positions are stored as RA/Dec in degrees. The application computes Julian Date, Greenwich Mean Sidereal Time, and Local Sidereal Time using standard IAU formulae. Equatorial-to-horizontal coordinate conversion provides the alt/az positions used by the horizon view. Stereographic projection is used for the polar planisphere.
+
+### Observer Location
+
+Default: Brisbane, Queensland, Australia (latitude −27.47°, longitude 153.03°). The UTC offset is auto-detected from the system clock using Python's `datetime.timezone`, which correctly handles daylight saving transitions (AEST +10 / AEDT +11 on systems with the timezone configured).
+
+### Time
+
+Polar and horizon views refresh every 30 seconds via a QTimer. The Local Sidereal Time drives the sky rotation — stars drift naturally across the view just as they do in the real sky. Transit times for individual objects are computed live from the current LST.
+
+### Rendering
+
+Stars are sized by magnitude (brighter stars appear larger). Deep-sky objects use distinct symbols by type. Three visual layers are kept distinct: warm amber coordinate labels, blue constellation lines, and dim grid lines. The horizon view includes a gradient ground overlay below the horizon line with a subtle warm glow at the boundary.
+
+### Dependencies
+
+`PySide6>=6.6` — the Qt for Python framework. No other dependencies. No numpy, no astropy, no internet access. All coordinate mathematics is implemented from first principles in `coordinates.py`.
+
+---
+
+## Licence
+
+MIT. See [LICENSE](LICENSE) for details.
+
+---
+
+Built in Queensland, shared in the spirit of looking up.
