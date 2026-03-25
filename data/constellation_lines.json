@@ -54,15 +54,23 @@
     ],
     [
       "sirius",
-      "wezen"
+      "muliphein"
     ],
     [
-      "wezen",
+      "sirius",
       "adhara"
     ],
     [
       "adhara",
-      "mirzam"
+      "wezen"
+    ],
+    [
+      "wezen",
+      "aludra"
+    ],
+    [
+      "adhara",
+      "furud"
     ]
   ],
   "Canis Minor": [
@@ -73,16 +81,24 @@
   ],
   "Taurus": [
     [
-      "elnath",
-      "aldebaran"
-    ],
-    [
       "aldebaran",
       "ain"
     ],
     [
       "ain",
       "hyadum_i"
+    ],
+    [
+      "aldebaran",
+      "elnath"
+    ],
+    [
+      "aldebaran",
+      "lambda_tau"
+    ],
+    [
+      "elnath",
+      "zeta_tau"
     ]
   ],
   "Gemini": [
@@ -125,39 +141,123 @@
     [
       "sadr",
       "albireo"
+    ],
+    [
+      "sadr",
+      "gienah_cyg"
+    ],
+    [
+      "sadr",
+      "delta_cyg"
     ]
   ],
   "Aquila": [
     [
-      "tarazed",
-      "altair"
+      "altair",
+      "tarazed"
     ],
     [
       "altair",
       "alshain"
+    ],
+    [
+      "tarazed",
+      "delta_aql"
+    ],
+    [
+      "altair",
+      "theta_aql"
+    ],
+    [
+      "altair",
+      "zeta_aql"
+    ],
+    [
+      "zeta_aql",
+      "lambda_aql"
     ]
   ],
   "Bootes": [
     [
       "arcturus",
       "izar"
+    ],
+    [
+      "izar",
+      "nekkar"
+    ],
+    [
+      "nekkar",
+      "seginus"
+    ],
+    [
+      "seginus",
+      "rho_boo"
+    ],
+    [
+      "rho_boo",
+      "arcturus"
+    ],
+    [
+      "arcturus",
+      "muphrid"
     ]
   ],
   "Leo": [
     [
       "regulus",
+      "eta_leo"
+    ],
+    [
+      "eta_leo",
       "algieba"
     ],
     [
       "algieba",
+      "mu_leo"
+    ],
+    [
+      "mu_leo",
+      "epsilon_leo"
+    ],
+    [
+      "epsilon_leo",
+      "algieba"
+    ],
+    [
+      "regulus",
+      "chertan"
+    ],
+    [
+      "chertan",
+      "denebola"
+    ],
+    [
+      "denebola",
       "zosma"
     ],
     [
       "zosma",
-      "denebola"
+      "chertan"
     ]
   ],
   "Virgo": [
+    [
+      "spica",
+      "porrima"
+    ],
+    [
+      "porrima",
+      "delta_vir"
+    ],
+    [
+      "delta_vir",
+      "vindemiatrix"
+    ],
+    [
+      "porrima",
+      "eta_vir"
+    ],
     [
       "spica",
       "zavijava"
@@ -177,6 +277,34 @@
     [
       "rigil_kentaurus",
       "hadar"
+    ],
+    [
+      "hadar",
+      "epsilon_cen"
+    ],
+    [
+      "epsilon_cen",
+      "gamma_cen"
+    ],
+    [
+      "gamma_cen",
+      "delta_cen"
+    ],
+    [
+      "hadar",
+      "eta_cen"
+    ],
+    [
+      "eta_cen",
+      "zeta_cen"
+    ],
+    [
+      "menkent",
+      "eta_cen"
+    ],
+    [
+      "menkent",
+      "iota_cen"
     ]
   ],
   "Ursa Major": [
@@ -233,8 +361,8 @@
       "markab"
     ],
     [
-      "markab",
-      "enif"
+      "enif",
+      "scheat"
     ]
   ],
   "Andromeda": [
@@ -293,7 +421,11 @@
       "kaus_borealis"
     ],
     [
-      "kaus_borealis",
+      "kaus_australis",
+      "ascella"
+    ],
+    [
+      "ascella",
       "phi_sgr"
     ],
     [
@@ -302,17 +434,41 @@
     ],
     [
       "nunki",
-      "ascella"
+      "kaus_borealis"
     ],
     [
-      "ascella",
-      "kaus_media"
+      "nunki",
+      "tau_sgr"
+    ],
+    [
+      "kaus_australis",
+      "alnasl"
+    ],
+    [
+      "alnasl",
+      "kaus_borealis"
     ]
   ],
   "Perseus": [
     [
       "mirfak",
       "algol"
+    ],
+    [
+      "mirfak",
+      "delta_per"
+    ],
+    [
+      "mirfak",
+      "epsilon_per"
+    ],
+    [
+      "epsilon_per",
+      "zeta_per"
+    ],
+    [
+      "algol",
+      "rho_per"
     ]
   ],
   "Aries": [
@@ -327,16 +483,40 @@
   ],
   "Scorpius": [
     [
-      "acrab",
+      "antares",
+      "sigma_sco"
+    ],
+    [
+      "sigma_sco",
       "dschubba"
     ],
     [
       "dschubba",
-      "antares"
+      "pi_sco"
     ],
     [
       "antares",
+      "tau_sco"
+    ],
+    [
+      "tau_sco",
       "epsilon_sco"
+    ],
+    [
+      "epsilon_sco",
+      "mu1_sco"
+    ],
+    [
+      "mu1_sco",
+      "zeta2_sco"
+    ],
+    [
+      "antares",
+      "wei"
+    ],
+    [
+      "wei",
+      "mu1_sco"
     ],
     [
       "epsilon_sco",
@@ -344,6 +524,18 @@
     ],
     [
       "shaula",
+      "lesath"
+    ],
+    [
+      "lesath",
+      "girtab"
+    ],
+    [
+      "girtab",
+      "iota1_sco"
+    ],
+    [
+      "iota1_sco",
       "sargas"
     ]
   ],
@@ -367,16 +559,36 @@
   ],
   "Draco": [
     [
-      "thuban",
-      "aldhibah"
+      "eltanin",
+      "rastaban"
     ],
     [
-      "aldhibah",
-      "eltanin"
+      "rastaban",
+      "chi_dra"
+    ],
+    [
+      "chi_dra",
+      "delta_dra"
+    ],
+    [
+      "delta_dra",
+      "zeta_dra"
+    ],
+    [
+      "zeta_dra",
+      "eta_dra"
+    ],
+    [
+      "eta_dra",
+      "iota_dra"
+    ],
+    [
+      "iota_dra",
+      "thuban"
     ],
     [
       "eltanin",
-      "rastaban"
+      "kappa_dra"
     ]
   ],
   "Hercules": [
@@ -422,33 +634,89 @@
     ],
     [
       "algorab",
+      "delta_crv"
+    ],
+    [
+      "delta_crv",
       "kraz"
     ],
     [
       "kraz",
-      "minkar"
+      "gienah"
     ],
     [
       "minkar",
-      "gienah"
+      "algorab"
     ]
   ],
   "Lupus": [
     [
       "alpha_lupi",
       "beta_lupi"
+    ],
+    [
+      "alpha_lupi",
+      "gamma_lup"
+    ],
+    [
+      "gamma_lup",
+      "delta_lup"
+    ],
+    [
+      "delta_lup",
+      "epsilon_lup"
+    ],
+    [
+      "epsilon_lup",
+      "zeta_lup"
     ]
   ],
   "Musca": [
     [
       "alpha_mus",
       "beta_mus"
+    ],
+    [
+      "alpha_mus",
+      "delta_mus"
+    ],
+    [
+      "delta_mus",
+      "gamma_mus"
+    ],
+    [
+      "gamma_mus",
+      "beta_mus"
+    ],
+    [
+      "alpha_mus",
+      "lambda_mus"
     ]
   ],
   "Lepus": [
     [
       "arneb",
       "nihal"
+    ],
+    [
+      "arneb",
+      "mu_lep"
+    ],
+    [
+      "nihal",
+      "epsilon_lep"
+    ],
+    [
+      "epsilon_lep",
+      "mu_lep"
+    ],
+    [
+      "arneb",
+      "beta_lep"
+    ],
+    [
+      "beta_lep",
+      "delta_lep"
     ]
   ],
   "Capricornus": [
@@ -458,7 +726,19 @@
     ],
     [
       "dabih",
+      "zeta_cap"
+    ],
+    [
+      "zeta_cap",
+      "nashira"
+    ],
+    [
+      "nashira",
       "deneb_algedi"
+    ],
+    [
+      "deneb_algedi",
+      "omega_cap"
     ]
   ],
   "Delphinus": [
@@ -477,6 +757,18 @@
     [
       "alpha_ara",
       "beta_ara"
+    ],
+    [
+      "beta_ara",
+      "gamma_ara"
+    ],
+    [
+      "gamma_ara",
+      "delta_ara"
+    ],
+    [
+      "alpha_ara",
+      "zeta_ara"
     ]
   ],
   "Phoenix": [
@@ -504,7 +796,23 @@
     ],
     [
       "cebalrai",
+      "zeta_oph"
+    ],
+    [
+      "zeta_oph",
+      "yed_posterior"
+    ],
+    [
+      "yed_posterior",
+      "yed_prior"
+    ],
+    [
+      "rasalhague",
       "sabik"
+    ],
+    [
+      "sabik",
+      "zeta_oph"
     ]
   ],
   "Auriga": [
@@ -533,6 +841,14 @@
     [
       "peacock",
       "beta_pavonis"
+    ],
+    [
+      "peacock",
+      "delta_pav"
+    ],
+    [
+      "delta_pav",
+      "eta_pav"
     ]
   ],
   "Piscis Austrinus": [
@@ -590,7 +906,19 @@
     ],
     [
       "alnair",
+      "gamma_gru"
+    ],
+    [
+      "gamma_gru",
       "aldhanab"
+    ],
+    [
+      "gruid",
+      "delta_gru"
+    ],
+    [
+      "delta_gru",
+      "epsilon_gru"
     ]
   ],
   "Eridanus": [
@@ -600,6 +928,18 @@
     ],
     [
       "zaurak",
+      "beid"
+    ],
+    [
+      "beid",
+      "theemin"
+    ],
+    [
+      "theemin",
+      "theta1_eri"
+    ],
+    [
+      "theta1_eri",
       "achernar"
     ]
   ],
@@ -715,6 +1055,50 @@
     [
       "gamma_mic",
       "epsilon_mic"
+    ]
+  ],
+  "Hydra": [
+    [
+      "alphard",
+      "nu_hya"
+    ],
+    [
+      "nu_hya",
+      "gamma_hya"
+    ],
+    [
+      "gamma_hya",
+      "pi_hya"
+    ],
+    [
+      "alphard",
+      "epsilon_hya"
+    ],
+    [
+      "epsilon_hya",
+      "zeta_hya"
+    ],
+    [
+      "zeta_hya",
+      "delta_hya"
+    ]
+  ],
+  "Aquarius": [
+    [
+      "sadalmelik",
+      "sadalsuud"
+    ],
+    [
+      "sadalmelik",
+      "sadachbia"
+    ],
+    [
+      "sadachbia",
+      "skat"
+    ],
+    [
+      "skat",
+      "lambda_aqr"
     ]
   ]
 }
