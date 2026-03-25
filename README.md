@@ -1,5 +1,7 @@
 # Southern Sky Trainer
 
+![Southern Sky Trainer Screenshot](doc/screenshot.png)
+
 Southern Sky Trainer is a free and open source desktop application for learning the night sky.
 
 It was created as a practical astronomy learning tool, focused on helping users become more familiar with stars, constellations, deep sky objects, sky position, and celestial coordinates through interactive exploration rather than static reference alone.
