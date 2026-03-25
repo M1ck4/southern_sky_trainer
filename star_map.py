@@ -451,8 +451,8 @@ class StarMapWidget(QWidget):
             offset = (az - self.facing_az_deg + 180.0) % 360.0 - 180.0
             if abs(offset) > self.horizon_fov_deg / 2.0:
                 continue
-            # Mirrored to match sky-overhead convention
-            x = (w / 2.0) - (offset / self.horizon_fov_deg) * w
+            # Map azimuth to x position
+            x = (w / 2.0) + (offset / self.horizon_fov_deg) * w
             painter.setPen(maj if az % 45 == 0 else line)
             painter.drawLine(int(x), 0, int(x), int(h))
             painter.setPen(tc)
@@ -564,6 +564,12 @@ class StarMapWidget(QWidget):
     def _is_visible(self, ra: float, dec: float) -> bool:
         if self.view_mode == VIEW_HORIZON and self.show_horizon_clip:
             return is_above_horizon(ra, dec, self.lst_deg, self.observer_lat, -5.0)
+        if self.view_mode == VIEW_POLAR:
+            # In polar (south-centred) view, only show objects that can
+            # ever be above the horizon from this latitude.
+            # For Brisbane (-27.47°), the northern limit is dec < 90 + lat = 62.5°
+            max_visible_dec = 90.0 + self.observer_lat  # e.g. 62.5° for Brisbane
+            return dec < max_visible_dec + 5.0  # small margin
         return True
 
     def _draw_stars(self, painter: QPainter) -> None:
@@ -979,15 +985,23 @@ class StarMapWidget(QWidget):
                 best_d, best = d, obj
         return best
 
+    def _active_zoom(self) -> float:
+        """Return the effective zoom factor for the current view mode."""
+        if self.view_mode == VIEW_POLAR:
+            return self.polar_zoom
+        return self.zoom_factor
+
     def _star_radius(self, mag: float) -> float:
+        z = self._active_zoom()
         r = max(1.2, min(8.0, 6.5 - mag))
-        r *= 0.65 + 0.15 * min(self.zoom_factor, 6.0)
+        r *= 0.65 + 0.15 * min(z, 6.0)
         return max(1.4, min(10.0, r))
 
     def _dso_radius(self, obj: CatalogObject) -> float:
+        z = self._active_zoom()
         mag = float(obj.get("magnitude", 10.0))
         r = max(4.0, min(10.0, 7.5 - min(mag, 8.0)))
-        r *= 0.75 + 0.08 * min(self.zoom_factor, 6.0)
+        r *= 0.75 + 0.08 * min(z, 6.0)
         return max(4.0, min(14.0, r))
 
     def _star_color(self, mag: float) -> QColor:
@@ -1006,10 +1020,12 @@ class StarMapWidget(QWidget):
         return QColor(200, 220, 240)
 
     def _should_label_star(self, mag: float) -> bool:
-        return mag <= 2.0 + min(self.zoom_factor - 1.0, 4.0) * 0.75
+        z = self._active_zoom()
+        return mag <= 2.0 + min(z - 1.0, 4.0) * 0.75
 
     def _should_label_dso(self, obj: CatalogObject) -> bool:
-        return float(obj.get("magnitude", 99.0)) <= 6.5 or self.zoom_factor >= 3.0
+        z = self._active_zoom()
+        return float(obj.get("magnitude", 99.0)) <= 6.5 or z >= 3.0
 
     def _obj_desc(self, obj: CatalogObject) -> str:
         n = obj.get("name", "?")
@@ -1049,7 +1065,7 @@ class StarMapWidget(QWidget):
             self.center_dec_deg = max(-120.0, min(120.0, new_dec))
         elif self.view_mode == VIEW_HORIZON:
             # Mirrored sky view: drag right pans facing eastward
-            self.facing_az_deg = (self.facing_az_deg + dx * self.horizon_fov_deg / w) % 360.0
+            self.facing_az_deg = (self.facing_az_deg - dx * self.horizon_fov_deg / w) % 360.0
             v_fov = self.horizon_fov_deg * (h / w)
             alt_per_pixel = v_fov / h
             self.horizon_alt_center = max(-10.0, min(90.0, self.horizon_alt_center + dy * alt_per_pixel))
@@ -1057,6 +1073,10 @@ class StarMapWidget(QWidget):
             # Pan the polar chart by shifting pixel offset
             self._polar_offset_x = getattr(self, '_polar_offset_x', 0.0) + dx
             self._polar_offset_y = getattr(self, '_polar_offset_y', 0.0) + dy
+            # Clamp so the SCP stays reachable
+            max_offset = max(self.width(), self.height()) * self.polar_zoom
+            self._polar_offset_x = max(-max_offset, min(max_offset, self._polar_offset_x))
+            self._polar_offset_y = max(-max_offset, min(max_offset, self._polar_offset_y))
 
     def _draw_ring(self, p: QPainter, obj: CatalogObject, c: QColor, r: float, w: int) -> None:
         x, y = self.sky_to_viewport(float(obj.get("ra_deg", 0)), float(obj.get("dec_deg", 0)))

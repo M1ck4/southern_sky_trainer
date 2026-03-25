@@ -1,7 +1,7 @@
 """
 app_window.py
 
-Main application window for the Astronomy Trainer.
+Main application window for the Southern Sky Trainer.
 
 This window is responsible for:
 - Displaying the current quiz prompt
@@ -238,7 +238,7 @@ class AppWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
-        self.setWindowTitle("Astronomy Trainer")
+        self.setWindowTitle("Southern Sky Trainer")
         self.resize(1400, 850)
 
         # Core state
@@ -518,7 +518,7 @@ class AppWindow(QMainWindow):
         layout.setSpacing(0)
 
         # --- App title ---
-        title_label = QLabel("Astronomy Trainer")
+        title_label = QLabel("Southern Sky Trainer")
         title_label.setAlignment(Qt.AlignLeft)
         title_label.setStyleSheet(
             f"font-size: 18px;"
@@ -587,8 +587,12 @@ class AppWindow(QMainWindow):
         for label, az in [("N", 0), ("E", 90), ("S", 180), ("W", 270)]:
             btn = QPushButton(label)
             btn.setCursor(Qt.PointingHandCursor)
-            btn.setFixedHeight(24)
-            btn.setFixedWidth(46)
+            btn.setFixedHeight(26)
+            btn.setFixedWidth(48)
+            btn.setStyleSheet(
+                f"padding: 2px 4px; font-size: 12px; font-weight: 600;"
+                f"min-width: 40px;"
+            )
             btn.clicked.connect(lambda checked, a=az: self._set_facing(a))
             facing_row.addWidget(btn)
 
@@ -2230,9 +2234,9 @@ class AppWindow(QMainWindow):
         """
         QMessageBox.information(
             self,
-            "About Astronomy Trainer",
+            "About Southern Sky Trainer",
             (
-                "Astronomy Trainer\n\n"
+                "Southern Sky Trainer\n\n"
                 "An educational star map and sky navigation tool.\n"
                 "Learn to find stars, deep-sky objects, and constellations "
                 "using right ascension and declination.\n\n"

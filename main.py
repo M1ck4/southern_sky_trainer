@@ -1,7 +1,7 @@
 """
 main.py
 
-Entry point for the Astronomy Trainer application.
+Entry point for the Southern Sky Trainer application.
 
 This file is intentionally kept small. Its job is to:
 1. Create the Qt application
@@ -24,7 +24,7 @@ def main() -> int:
         int: Exit code returned by the Qt event loop.
     """
     app = QApplication(sys.argv)
-    app.setApplicationName("Astronomy Trainer")
+    app.setApplicationName("Southern Sky Trainer")
     app.setOrganizationName("Orion Labs")
 
     window = AppWindow()
