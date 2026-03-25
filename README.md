@@ -374,13 +374,11 @@ This project is released as a working open source tool.
 
 It was originally created for personal use and is being shared publicly in case it is useful to others. It may or may not receive future updates. This repository should be understood as a functional public release rather than a promise of active long-term development.
 
-## Open Source and Licensing
+## License
 
-This project is intended to be free to use and open source.
+This project is free and open source.
 
-If you want others to be able to legally use, modify, and redistribute the code, the repository should include a proper open source license file. A permissive license such as the MIT License is a common choice for projects of this kind.
-
-Without a license file, people can view the code, but their rights to reuse it remain unclear.
+It is released under the MIT License. See the `LICENSE` file for details..
 
 ## Notes
 
