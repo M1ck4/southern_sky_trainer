@@ -37,7 +37,7 @@ Southern Sky Trainer teaches sky navigation through direct interaction rather th
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/southern-sky-trainer.git
+git clone https://github.com/M1ck4/southern-sky-trainer.git
 cd southern-sky-trainer
 ```
 
