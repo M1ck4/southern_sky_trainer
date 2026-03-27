@@ -34,6 +34,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QScrollArea,
     QSizePolicy,
+    QSlider,
     QStatusBar,
     QVBoxLayout,
     QWidget,
@@ -41,6 +42,7 @@ from PySide6.QtWidgets import (
 
 from quiz_engine import QuizEngine
 from star_map import StarMapWidget
+from celestial_sphere import CelestialSphereWidget
 from coordinates import angular_separation_deg
 
 
@@ -157,6 +159,12 @@ STYLESHEET = f"""
         border-color: {SpaceTheme.ACCENT_BLUE};
     }}
 
+    QPushButton:disabled {{
+        background-color: {SpaceTheme.BG_DARK};
+        color: {SpaceTheme.TEXT_MUTED};
+        border-color: {SpaceTheme.BORDER_SUBTLE};
+    }}
+
     QPushButton#button_new_question {{
         background-color: #1a2d50;
         border-color: {SpaceTheme.ACCENT_BLUE};
@@ -240,6 +248,7 @@ class AppWindow(QMainWindow):
 
         self.setWindowTitle("Southern Sky Trainer")
         self.resize(1400, 850)
+        self.showMaximized()
 
         # Core state
         self.quiz_engine = QuizEngine()
@@ -271,6 +280,9 @@ class AppWindow(QMainWindow):
         self.pointer_label: Optional[QLabel] = None
         self.pointer_header_widget: Optional[QLabel] = None
         self.star_map: Optional[StarMapWidget] = None
+        self.sphere_widget: Optional[CelestialSphereWidget] = None
+        self.active_map_widget: Optional[QWidget] = None  # points to whichever is visible
+        self.map_container_layout: Optional[QVBoxLayout] = None
         self.status_bar: Optional[QStatusBar] = None
 
         # Widget groups for mode toggling
@@ -279,7 +291,9 @@ class AppWindow(QMainWindow):
         self.btn_view_eq: Optional[QPushButton] = None
         self.btn_view_polar: Optional[QPushButton] = None
         self.btn_view_horizon: Optional[QPushButton] = None
+        self.btn_view_sphere: Optional[QPushButton] = None
         self.facing_row_widget: Optional[QWidget] = None
+        self.sphere_nav_widget: Optional[QWidget] = None
         self.time_label: Optional[QLabel] = None
         self.tools_container: Optional[QWidget] = None
         self.btn_tool_select: Optional[QPushButton] = None
@@ -287,6 +301,16 @@ class AppWindow(QMainWindow):
         self.btn_tool_path: Optional[QPushButton] = None
         self.btn_tool_identify: Optional[QPushButton] = None
         self.tool_desc_label: Optional[QLabel] = None
+
+        # Time scrubber
+        self.time_scrubber_container: Optional[QWidget] = None
+        self.time_slider: Optional[QSlider] = None
+        self.time_display_label: Optional[QLabel] = None
+        self.time_offset_label: Optional[QLabel] = None
+        self._time_offset_minutes: float = 0.0  # offset from real time
+        self._time_animating: bool = False
+        self._time_anim_speed: float = 60.0  # minutes per second
+        self._time_anim_timer: Optional[QTimer] = None
 
         self._apply_theme()
         self._build_ui()
@@ -462,11 +486,21 @@ class AppWindow(QMainWindow):
 
         layout.addWidget(action_bar)
 
-        # Star map
+        # Star map (2D projections)
         self.star_map = StarMapWidget()
         self.star_map.setMinimumSize(600, 400)
         self.star_map.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         layout.addWidget(self.star_map)
+
+        # Celestial sphere (3D view)
+        self.sphere_widget = CelestialSphereWidget()
+        self.sphere_widget.setMinimumSize(600, 400)
+        self.sphere_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.sphere_widget.setVisible(False)
+        layout.addWidget(self.sphere_widget)
+
+        self.active_map_widget = self.star_map
+        self.map_container_layout = layout
 
         return container
 
@@ -554,8 +588,12 @@ class AppWindow(QMainWindow):
         layout.addWidget(view_header)
         layout.addSpacing(4)
 
-        view_row = QHBoxLayout()
-        view_row.setSpacing(4)
+        # 2x2 grid: top row = flat projections, bottom row = 3D + inside toggle
+        view_grid = QVBoxLayout()
+        view_grid.setSpacing(3)
+
+        view_row_1 = QHBoxLayout()
+        view_row_1.setSpacing(3)
 
         self.btn_view_eq = QPushButton("Chart")
         self.btn_view_eq.setCursor(Qt.PointingHandCursor)
@@ -572,10 +610,93 @@ class AppWindow(QMainWindow):
         self.btn_view_horizon.setFixedHeight(26)
         self.btn_view_horizon.clicked.connect(lambda: self._set_view_mode("horizon"))
 
-        view_row.addWidget(self.btn_view_eq)
-        view_row.addWidget(self.btn_view_polar)
-        view_row.addWidget(self.btn_view_horizon)
-        layout.addLayout(view_row)
+        view_row_1.addWidget(self.btn_view_eq)
+        view_row_1.addWidget(self.btn_view_polar)
+        view_row_1.addWidget(self.btn_view_horizon)
+        view_grid.addLayout(view_row_1)
+
+        view_row_2 = QHBoxLayout()
+        view_row_2.setSpacing(3)
+
+        self.btn_view_sphere = QPushButton("Sphere")
+        self.btn_view_sphere.setCursor(Qt.PointingHandCursor)
+        self.btn_view_sphere.setFixedHeight(26)
+        self.btn_view_sphere.setToolTip("3D celestial sphere — see RA/Dec as a globe")
+        self.btn_view_sphere.clicked.connect(lambda: self._set_view_mode("sphere"))
+
+        self.btn_view_inside = QPushButton("Inside")
+        self.btn_view_inside.setCursor(Qt.PointingHandCursor)
+        self.btn_view_inside.setFixedHeight(26)
+        self.btn_view_inside.setToolTip("Toggle inside/outside view of the sphere (I)")
+        self.btn_view_inside.setVisible(False)
+        self.btn_view_inside.clicked.connect(self._toggle_sphere_inside)
+
+        view_row_2.addWidget(self.btn_view_sphere)
+        view_row_2.addWidget(self.btn_view_inside)
+        view_grid.addLayout(view_row_2)
+
+        # Sphere navigation buttons (visible only in sphere mode)
+        self.sphere_nav_widget = QWidget()
+        sphere_nav_layout = QVBoxLayout(self.sphere_nav_widget)
+        sphere_nav_layout.setContentsMargins(0, 2, 0, 0)
+        sphere_nav_layout.setSpacing(2)
+
+        _nav_btn_style = (
+            f"font-size: 10px; padding: 2px 4px; min-width: 32px;"
+            f"border-radius: 3px; font-weight: 600;"
+        )
+
+        # Row 1: Your Sky + compass
+        nav_row1 = QHBoxLayout()
+        nav_row1.setSpacing(2)
+
+        btn_yoursky = QPushButton("Your Sky")
+        btn_yoursky.setCursor(Qt.PointingHandCursor)
+        btn_yoursky.setFixedHeight(24)
+        btn_yoursky.setStyleSheet(
+            _nav_btn_style +
+            f"background-color: #1a2d50; border: 1px solid {SpaceTheme.ACCENT_BLUE};"
+            f"color: {SpaceTheme.ACCENT_CYAN};"
+        )
+        btn_yoursky.setToolTip("Jump to view centred on your sky")
+        btn_yoursky.clicked.connect(lambda: self._sphere_navigate("your_sky"))
+
+        for label, preset in [("N", "north"), ("E", "east"),
+                               ("S", "south"), ("W", "west")]:
+            btn = QPushButton(label)
+            btn.setCursor(Qt.PointingHandCursor)
+            btn.setFixedHeight(24)
+            btn.setFixedWidth(28)
+            btn.setStyleSheet(_nav_btn_style)
+            btn.setToolTip(f"Look {preset.title()}")
+            btn.clicked.connect(
+                lambda checked, p=preset: self._sphere_navigate(p))
+            nav_row1.addWidget(btn)
+
+        nav_row1.insertWidget(0, btn_yoursky)
+        sphere_nav_layout.addLayout(nav_row1)
+
+        # Row 2: Zenith + poles
+        nav_row2 = QHBoxLayout()
+        nav_row2.setSpacing(2)
+
+        for label, preset in [("Zenith", "zenith"), ("SCP", "scp"), ("NCP", "ncp")]:
+            btn = QPushButton(label)
+            btn.setCursor(Qt.PointingHandCursor)
+            btn.setFixedHeight(24)
+            btn.setStyleSheet(_nav_btn_style)
+            btn.setToolTip(f"Look at {label}")
+            btn.clicked.connect(
+                lambda checked, p=preset: self._sphere_navigate(p))
+            nav_row2.addWidget(btn)
+
+        nav_row2.addStretch()
+        sphere_nav_layout.addLayout(nav_row2)
+
+        layout.addWidget(self.sphere_nav_widget)
+        self.sphere_nav_widget.setVisible(False)
+
+        layout.addLayout(view_grid)
         layout.addSpacing(4)
 
         # Facing direction (horizon only)
@@ -598,6 +719,75 @@ class AppWindow(QMainWindow):
 
         layout.addWidget(self.facing_row_widget)
         self.facing_row_widget.setVisible(False)
+
+        # Sphere navigation controls (sphere view only)
+        self.sphere_nav_widget = QWidget()
+        sphere_nav_layout = QVBoxLayout(self.sphere_nav_widget)
+        sphere_nav_layout.setContentsMargins(0, 2, 0, 0)
+        sphere_nav_layout.setSpacing(3)
+
+        _nav_btn_style = (
+            f"padding: 2px 4px; font-size: 11px; font-weight: 600;"
+            f"min-width: 36px; border-radius: 3px;"
+        )
+
+        # Row 1: compass directions — rotate the view to face N/E/S/W
+        compass_row = QHBoxLayout()
+        compass_row.setSpacing(3)
+
+        for label, rot_y in [("N", 0), ("E", 90), ("S", 180), ("W", 270)]:
+            btn = QPushButton(label)
+            btn.setCursor(Qt.PointingHandCursor)
+            btn.setFixedHeight(24)
+            btn.setStyleSheet(_nav_btn_style)
+            btn.setToolTip(f"Look {label}")
+            btn.clicked.connect(
+                lambda checked, ry=rot_y: self._sphere_look_direction(ry))
+            compass_row.addWidget(btn)
+
+        sphere_nav_layout.addLayout(compass_row)
+
+        # Row 2: preset views — quick jumps to useful orientations
+        preset_row = QHBoxLayout()
+        preset_row.setSpacing(3)
+
+        btn_zenith = QPushButton("Zenith")
+        btn_zenith.setCursor(Qt.PointingHandCursor)
+        btn_zenith.setFixedHeight(24)
+        btn_zenith.setStyleSheet(_nav_btn_style)
+        btn_zenith.setToolTip("Look straight up at the zenith")
+        btn_zenith.clicked.connect(lambda: self._sphere_preset_view("zenith"))
+
+        btn_scp = QPushButton("SCP")
+        btn_scp.setCursor(Qt.PointingHandCursor)
+        btn_scp.setFixedHeight(24)
+        btn_scp.setStyleSheet(_nav_btn_style)
+        btn_scp.setToolTip("Look towards the south celestial pole")
+        btn_scp.clicked.connect(lambda: self._sphere_preset_view("scp"))
+
+        btn_ncp = QPushButton("NCP")
+        btn_ncp.setCursor(Qt.PointingHandCursor)
+        btn_ncp.setFixedHeight(24)
+        btn_ncp.setStyleSheet(_nav_btn_style)
+        btn_ncp.setToolTip("Look towards the north celestial pole")
+        btn_ncp.clicked.connect(lambda: self._sphere_preset_view("ncp"))
+
+        btn_reset_view = QPushButton("Reset")
+        btn_reset_view.setCursor(Qt.PointingHandCursor)
+        btn_reset_view.setFixedHeight(24)
+        btn_reset_view.setStyleSheet(_nav_btn_style)
+        btn_reset_view.setToolTip("Reset to default view (R)")
+        btn_reset_view.clicked.connect(lambda: self._sphere_preset_view("reset"))
+
+        preset_row.addWidget(btn_zenith)
+        preset_row.addWidget(btn_scp)
+        preset_row.addWidget(btn_ncp)
+        preset_row.addWidget(btn_reset_view)
+
+        sphere_nav_layout.addLayout(preset_row)
+
+        layout.addWidget(self.sphere_nav_widget)
+        self.sphere_nav_widget.setVisible(False)
 
         # Time label
         self.time_label = QLabel("")
@@ -676,6 +866,139 @@ class AppWindow(QMainWindow):
 
         layout.addWidget(self.tools_container)
         self.tools_container.setVisible(False)
+
+        layout.addSpacing(4)
+
+        # --- Time Scrubber (explore mode only) ---
+        self.time_scrubber_container = QWidget()
+        ts_layout = QVBoxLayout(self.time_scrubber_container)
+        ts_layout.setContentsMargins(0, 0, 0, 0)
+        ts_layout.setSpacing(2)
+
+        ts_header = self._make_section_header("TIME TRAVEL")
+        ts_layout.addWidget(ts_header)
+        ts_layout.addSpacing(2)
+
+        # Time display
+        self.time_display_label = QLabel("")
+        self.time_display_label.setWordWrap(True)
+        self.time_display_label.setStyleSheet(
+            f"font-size: 11px;"
+            f"color: {SpaceTheme.TEXT_PRIMARY};"
+            f"padding: 1px 0px;"
+            f"border: none;"
+        )
+        ts_layout.addWidget(self.time_display_label)
+
+        # Offset label
+        self.time_offset_label = QLabel("Now (live)")
+        self.time_offset_label.setStyleSheet(
+            f"font-size: 10px;"
+            f"color: {SpaceTheme.ACCENT_GOLD};"
+            f"padding: 0px;"
+            f"border: none;"
+        )
+        ts_layout.addWidget(self.time_offset_label)
+        ts_layout.addSpacing(2)
+
+        # Slider: ±720 minutes (12 hours) range
+        self.time_slider = QSlider(Qt.Horizontal)
+        self.time_slider.setRange(-720, 720)
+        self.time_slider.setValue(0)
+        self.time_slider.setTickInterval(60)
+        self.time_slider.setSingleStep(5)
+        self.time_slider.setPageStep(60)
+        self.time_slider.setStyleSheet(
+            f"QSlider::groove:horizontal {{"
+            f"  background: {SpaceTheme.BG_SURFACE};"
+            f"  height: 6px; border-radius: 3px;"
+            f"  border: 1px solid {SpaceTheme.BORDER_SUBTLE};"
+            f"}}"
+            f"QSlider::handle:horizontal {{"
+            f"  background: {SpaceTheme.ACCENT_BLUE};"
+            f"  width: 14px; margin: -5px 0;"
+            f"  border-radius: 7px;"
+            f"  border: 1px solid {SpaceTheme.ACCENT_CYAN};"
+            f"}}"
+            f"QSlider::handle:horizontal:hover {{"
+            f"  background: {SpaceTheme.ACCENT_CYAN};"
+            f"}}"
+        )
+        self.time_slider.valueChanged.connect(self._on_time_slider_changed)
+        ts_layout.addWidget(self.time_slider)
+        ts_layout.addSpacing(2)
+
+        # Step buttons row 1: fine steps
+        step_row1 = QHBoxLayout()
+        step_row1.setSpacing(2)
+
+        _step_btn_style = (
+            f"font-size: 10px; padding: 2px 4px; min-width: 32px;"
+            f"border-radius: 3px;"
+        )
+
+        for label, minutes in [("-1h", -60), ("-10m", -10), ("-1m", -1),
+                                ("+1m", 1), ("+10m", 10), ("+1h", 60)]:
+            btn = QPushButton(label)
+            btn.setCursor(Qt.PointingHandCursor)
+            btn.setFixedHeight(22)
+            btn.setStyleSheet(_step_btn_style)
+            btn.clicked.connect(
+                lambda checked, m=minutes: self._step_time(m))
+            step_row1.addWidget(btn)
+
+        ts_layout.addLayout(step_row1)
+
+        # Step buttons row 2: coarse steps + play/reset
+        step_row2 = QHBoxLayout()
+        step_row2.setSpacing(2)
+
+        for label, minutes in [("-1d", -1440), ("-6h", -360),
+                                ("+6h", 360), ("+1d", 1440)]:
+            btn = QPushButton(label)
+            btn.setCursor(Qt.PointingHandCursor)
+            btn.setFixedHeight(22)
+            btn.setStyleSheet(_step_btn_style)
+            btn.clicked.connect(
+                lambda checked, m=minutes: self._step_time(m))
+            step_row2.addWidget(btn)
+
+        ts_layout.addLayout(step_row2)
+        ts_layout.addSpacing(2)
+
+        # Play/pause and reset row
+        ctrl_row = QHBoxLayout()
+        ctrl_row.setSpacing(3)
+
+        self._btn_time_play = QPushButton("▶ Play")
+        self._btn_time_play.setCursor(Qt.PointingHandCursor)
+        self._btn_time_play.setFixedHeight(24)
+        self._btn_time_play.setStyleSheet(
+            f"font-size: 10px; padding: 2px 8px; border-radius: 3px;"
+            f"background-color: #1a2d50;"
+            f"border: 1px solid {SpaceTheme.ACCENT_BLUE};"
+            f"color: {SpaceTheme.ACCENT_CYAN};"
+        )
+        self._btn_time_play.clicked.connect(self._toggle_time_animation)
+
+        self._btn_time_reset = QPushButton("Now")
+        self._btn_time_reset.setCursor(Qt.PointingHandCursor)
+        self._btn_time_reset.setFixedHeight(24)
+        self._btn_time_reset.setStyleSheet(
+            f"font-size: 10px; padding: 2px 8px; border-radius: 3px;"
+            f"background-color: #2a2518;"
+            f"border: 1px solid #665522;"
+            f"color: {SpaceTheme.ACCENT_GOLD};"
+        )
+        self._btn_time_reset.clicked.connect(self._reset_time)
+
+        ctrl_row.addWidget(self._btn_time_play)
+        ctrl_row.addWidget(self._btn_time_reset)
+        ctrl_row.addStretch()
+        ts_layout.addLayout(ctrl_row)
+
+        layout.addWidget(self.time_scrubber_container)
+        self.time_scrubber_container.setVisible(False)
 
         layout.addSpacing(6)
         layout.addWidget(self._make_divider())
@@ -933,6 +1256,10 @@ class AppWindow(QMainWindow):
         self.star_map.object_clicked.connect(self.handle_map_click)
         self.star_map.sky_clicked.connect(self._handle_sky_click)
 
+        if self.sphere_widget:
+            self.sphere_widget.object_clicked.connect(self.handle_map_click)
+            self.sphere_widget.sky_clicked.connect(self._handle_sky_click)
+
         button_new = self.findChild(QPushButton, "button_new_question")
         button_show = self.findChild(QPushButton, "button_show_answer")
         button_reset = self.findChild(QPushButton, "button_reset_score")
@@ -965,12 +1292,31 @@ class AppWindow(QMainWindow):
         if not self.star_map:
             return
 
-        self.star_map.set_view_mode(mode)
+        is_sphere = (mode == "sphere")
 
-        # Update button styling to show active view
-        for btn, m in [(self.btn_view_eq, "equatorial"),
-                       (self.btn_view_polar, "polar"),
-                       (self.btn_view_horizon, "horizon")]:
+        # Widget swapping: show sphere or star map
+        if is_sphere:
+            self.star_map.setVisible(False)
+            if self.sphere_widget:
+                self.sphere_widget.setVisible(True)
+                self.active_map_widget = self.sphere_widget
+        else:
+            if self.sphere_widget:
+                self.sphere_widget.setVisible(False)
+            self.star_map.setVisible(True)
+            self.star_map.set_view_mode(mode)
+            self.active_map_widget = self.star_map
+
+        # Update all view button styling
+        all_buttons = [
+            (self.btn_view_eq, "equatorial"),
+            (self.btn_view_polar, "polar"),
+            (self.btn_view_horizon, "horizon"),
+            (self.btn_view_sphere, "sphere"),
+        ]
+        for btn, m in all_buttons:
+            if btn is None:
+                continue
             if m == mode:
                 btn.setStyleSheet(
                     f"background-color: {SpaceTheme.ACCENT_BLUE};"
@@ -989,19 +1335,179 @@ class AppWindow(QMainWindow):
                     f"font-size: 12px;"
                 )
 
-        # Show/hide facing controls and time label
+        # Show/hide view-specific controls
         show_sky = mode in ("polar", "horizon")
-        self.facing_row_widget.setVisible(mode == "horizon")
-        self.time_label.setVisible(show_sky)
+        if self.facing_row_widget:
+            self.facing_row_widget.setVisible(mode == "horizon")
+        if self.sphere_nav_widget:
+            self.sphere_nav_widget.setVisible(is_sphere)
+        if self.time_label:
+            self.time_label.setVisible(show_sky)
+
+        # Show/hide sphere-specific controls
+        if hasattr(self, 'btn_view_inside') and self.btn_view_inside:
+            self.btn_view_inside.setVisible(is_sphere)
+            if is_sphere:
+                self._update_inside_button()
+        if hasattr(self, 'sphere_nav_widget') and self.sphere_nav_widget:
+            self.sphere_nav_widget.setVisible(is_sphere)
+
+        # Disable distance/path/identify tools in sphere mode
+        # (they don't render well on a 3D surface)
+        sphere_disabled_tools = [
+            self.btn_tool_distance,
+            self.btn_tool_path,
+            self.btn_tool_identify,
+        ]
+        for btn in sphere_disabled_tools:
+            if btn:
+                btn.setEnabled(not is_sphere)
+                if is_sphere:
+                    btn.setToolTip(btn.toolTip().split(" (")[0] + " (not available in sphere view)")
+                else:
+                    # Restore original tooltip by stripping the suffix
+                    tip = btn.toolTip()
+                    if "(not available" in tip:
+                        btn.setToolTip(tip.split(" (not available")[0])
+
+        # If switching to sphere with a non-select tool active, revert to select
+        if is_sphere and self.explore_mode and self.explore_tool != "select":
+            self._set_explore_tool("select")
+
+        # Time scrubber: hide in chart mode (RA/Dec is fixed),
+        # show in polar/horizon/sphere when in explore mode
+        show_scrubber = (mode != "equatorial") and self.explore_mode
+        if self.time_scrubber_container:
+            self.time_scrubber_container.setVisible(show_scrubber)
+            if not show_scrubber and self._time_offset_minutes != 0.0:
+                self._reset_time()
 
         if show_sky:
             self._update_time_label()
 
         if self.status_bar:
-            labels = {"equatorial": "Chart view",
-                      "polar": "Polar planisphere",
-                      "horizon": "Horizon view"}
+            labels = {
+                "equatorial": "Chart view",
+                "polar": "Polar planisphere",
+                "horizon": "Horizon view",
+                "sphere": "Celestial sphere — drag to rotate, I to toggle inside/outside",
+            }
             self.status_bar.showMessage(labels.get(mode, mode))
+
+    def _toggle_sphere_inside(self) -> None:
+        """Toggle inside/outside view of the celestial sphere."""
+        if self.sphere_widget:
+            self.sphere_widget.toggle_inside_outside()
+            self._update_inside_button()
+
+    def _sphere_navigate(self, preset: str) -> None:
+        """Navigate the sphere to a preset orientation."""
+        if self.sphere_widget:
+            self.sphere_widget.navigate_to(preset)
+
+    def _update_inside_button(self) -> None:
+        """Update the inside/outside button label."""
+        if not hasattr(self, 'btn_view_inside') or not self.btn_view_inside:
+            return
+        if self.sphere_widget and not self.sphere_widget.view_outside:
+            self.btn_view_inside.setText("Outside")
+            self.btn_view_inside.setToolTip("Switch to outside view of the sphere")
+        else:
+            self.btn_view_inside.setText("Inside")
+            self.btn_view_inside.setToolTip("Switch to inside view — see sky as observer")
+
+    def _sphere_look_direction(self, rot_y_deg: float) -> None:
+        """Rotate the sphere view to face a compass direction.
+
+        In inside (dome) mode, this sets the gaze direction so
+        that the chosen compass direction is centred on screen.
+        In outside (globe) mode, this spins the globe so the
+        observer's meridian faces that direction.
+
+        Directions: N=0, E=90, S=180, W=270
+        """
+        if not self.sphere_widget:
+            return
+
+        if self.sphere_widget.view_outside:
+            # Outside: spin the globe. rot_y controls the horizontal
+            # rotation. We want the observer's meridian (HA=0) to face
+            # the camera. Compass directions map to different rot_y values.
+            # S=0 (default front), W=90, N=180, E=270
+            globe_angles = {0: 180, 90: 270, 180: 0, 270: 90}
+            self.sphere_widget.rot_y = float(globe_angles.get(
+                int(rot_y_deg), rot_y_deg))
+        else:
+            # Inside: set gaze direction
+            # The dome view has south as default forward (rot_y=0)
+            # N=180, E=-90 (or 270), S=0, W=90
+            dome_angles = {0: 180, 90: 270, 180: 0, 270: 90}
+            self.sphere_widget.rot_y = float(dome_angles.get(
+                int(rot_y_deg), rot_y_deg))
+
+        self.sphere_widget.update()
+
+    def _sphere_preset_view(self, preset: str) -> None:
+        """Jump to a preset orientation on the sphere.
+
+        Presets:
+        - zenith: look straight up (inside) or top-down (outside)
+        - scp: look towards the south celestial pole
+        - ncp: look towards the north celestial pole
+        - reset: return to default view
+        """
+        if not self.sphere_widget:
+            return
+
+        sw = self.sphere_widget
+
+        if preset == "zenith":
+            if sw.view_outside:
+                # Outside: tilt to look down at the globe from above
+                sw.rot_x = -89.0
+                sw.rot_y = 0.0
+            else:
+                # Inside: look straight up
+                sw.rot_x = -89.0
+                sw.rot_y = 0.0
+
+        elif preset == "scp":
+            if sw.view_outside:
+                # Outside: tilt so the SCP (bottom of the globe) faces us
+                sw.rot_x = 89.0
+                sw.rot_y = 0.0
+            else:
+                # Inside: look towards the SCP
+                # SCP altitude from Brisbane = -(90 + lat) = -(90-27.5) = -62.5°
+                # ... actually the SCP alt = lat = -27.5° (it's |lat| above the
+                # southern horizon). So we need to look south and up by |lat|.
+                sw.rot_x = sw.observer_lat  # negative = look up
+                sw.rot_y = 0.0  # south is forward
+
+        elif preset == "ncp":
+            if sw.view_outside:
+                # Outside: tilt so the NCP (top of globe) faces us
+                sw.rot_x = -89.0
+                sw.rot_y = 0.0
+            else:
+                # Inside: look north and down towards horizon
+                # NCP is below the horizon from Brisbane
+                sw.rot_x = -sw.observer_lat
+                sw.rot_y = 180.0  # north
+
+        elif preset == "reset":
+            sw.rot_x = sw.observer_lat
+            sw.rot_y = 0.0
+            sw.sphere_zoom = 1.0
+
+        sw.update()
+
+    @property
+    def _active_sky(self):
+        """Return whichever sky widget is currently visible (star_map or sphere)."""
+        if self.sphere_widget and self.sphere_widget.isVisible():
+            return self.sphere_widget
+        return self.star_map
 
     def _set_facing(self, az_deg: float) -> None:
         """Set the facing direction for horizon view."""
@@ -1009,23 +1515,195 @@ class AppWindow(QMainWindow):
             self.star_map.set_facing(az_deg)
 
     def _refresh_sky_time(self) -> None:
-        """Called by timer to refresh the sky view with current time."""
+        """Called by timer to refresh the sky view with current time.
+        Respects the time offset from the scrubber."""
+        if self._time_offset_minutes != 0.0:
+            # When offset is active, we set LST manually
+            self._apply_time_offset()
+            return
         if self.star_map and self.star_map.auto_time:
             if self.star_map.view_mode != "equatorial":
                 self.star_map.refresh_time()
                 self._update_time_label()
+        if self.sphere_widget and self.sphere_widget.auto_time:
+            self.sphere_widget.refresh_time()
+        self._update_time_scrubber_display()
 
     def _update_time_label(self) -> None:
-        """Update the time display label."""
+        """Update the time display label in the side panel."""
         if not self.time_label or not self.star_map:
             return
         import datetime
         now = datetime.datetime.now()
+        if self._time_offset_minutes != 0.0:
+            now += datetime.timedelta(minutes=self._time_offset_minutes)
         lst_h = self.star_map.lst_deg / 15.0
-        auto_tag = "auto" if self.star_map.auto_time else "manual"
+        auto_tag = "live" if self._time_offset_minutes == 0.0 else "offset"
         self.time_label.setText(
             f"Local: {now.strftime('%H:%M')}  |  LST: {lst_h:.1f}h  ({auto_tag})"
         )
+
+    # ------------------------------------------------------------------
+    # TIME SCRUBBER
+    # ------------------------------------------------------------------
+
+    def _on_time_slider_changed(self, value: int) -> None:
+        """Handle slider movement — set time offset in minutes."""
+        self._time_offset_minutes = float(value)
+        self._apply_time_offset()
+
+    def _step_time(self, minutes: float) -> None:
+        """Step the time offset by the given number of minutes."""
+        self._time_offset_minutes += minutes
+        # Update slider if within range, otherwise just track offset
+        if self.time_slider:
+            clamped = max(-720, min(720, int(self._time_offset_minutes)))
+            self.time_slider.blockSignals(True)
+            self.time_slider.setValue(clamped)
+            self.time_slider.blockSignals(False)
+        self._apply_time_offset()
+
+    def _reset_time(self) -> None:
+        """Reset to live (real-time) mode."""
+        self._time_offset_minutes = 0.0
+        if self.time_slider:
+            self.time_slider.blockSignals(True)
+            self.time_slider.setValue(0)
+            self.time_slider.blockSignals(False)
+        # Re-enable auto time on both widgets
+        if self.star_map:
+            self.star_map.auto_time = True
+            self.star_map.refresh_time()
+        if self.sphere_widget:
+            self.sphere_widget.auto_time = True
+            self.sphere_widget.refresh_time()
+        self._stop_time_animation()
+        self._update_time_scrubber_display()
+        self._update_time_label()
+
+    def _apply_time_offset(self) -> None:
+        """Compute and apply the offset LST to all sky widgets."""
+        import datetime
+        from coordinates import current_lst, _detect_utc_offset
+
+        # Compute what the LST would be at now + offset
+        now = datetime.datetime.now()
+        offset_time = now + datetime.timedelta(minutes=self._time_offset_minutes)
+
+        # We need to compute LST for the offset time.
+        # Since current_lst uses datetime.now() internally, we compute
+        # the JD manually for the offset time.
+        from coordinates import datetime_to_jd, local_sidereal_time
+
+        utc_offset = _detect_utc_offset()
+        jd = datetime_to_jd(
+            year=offset_time.year,
+            month=offset_time.month,
+            day=offset_time.day,
+            hour=offset_time.hour,
+            minute=offset_time.minute,
+            second=offset_time.second,
+            utc_offset_hours=utc_offset,
+        )
+
+        if self.star_map:
+            lon = self.star_map.observer_lon
+            lst = local_sidereal_time(jd, lon)
+            self.star_map.auto_time = False
+            self.star_map.lst_deg = lst
+            self.star_map.update()
+
+        if self.sphere_widget:
+            lon = self.sphere_widget.observer_lon
+            lst = local_sidereal_time(jd, lon)
+            self.sphere_widget.auto_time = False
+            self.sphere_widget.lst_deg = lst
+            self.sphere_widget.update()
+
+        self._update_time_scrubber_display()
+        self._update_time_label()
+
+    def _update_time_scrubber_display(self) -> None:
+        """Update the time scrubber labels."""
+        if not self.time_display_label:
+            return
+        import datetime
+
+        now = datetime.datetime.now()
+        sim_time = now + datetime.timedelta(minutes=self._time_offset_minutes)
+
+        # Get LST from whichever widget is active
+        lst_h = 0.0
+        widget = self._active_sky
+        if widget:
+            lst_h = widget.lst_deg / 15.0
+
+        self.time_display_label.setText(
+            f"Simulated: {sim_time.strftime('%a %d %b %H:%M')}   "
+            f"LST: {lst_h:.1f}h"
+        )
+
+        if self.time_offset_label:
+            if abs(self._time_offset_minutes) < 0.5:
+                self.time_offset_label.setText("Now (live)")
+                self.time_offset_label.setStyleSheet(
+                    f"font-size: 10px; color: {SpaceTheme.ACCENT_GREEN};"
+                    f"padding: 0px; border: none;"
+                )
+            else:
+                total = self._time_offset_minutes
+                sign = "+" if total >= 0 else ""
+                if abs(total) < 60:
+                    offset_str = f"{sign}{total:.0f} min"
+                elif abs(total) < 1440:
+                    offset_str = f"{sign}{total / 60:.1f} hrs"
+                else:
+                    offset_str = f"{sign}{total / 1440:.1f} days"
+                self.time_offset_label.setText(f"Offset: {offset_str}")
+                self.time_offset_label.setStyleSheet(
+                    f"font-size: 10px; color: {SpaceTheme.ACCENT_GOLD};"
+                    f"padding: 0px; border: none;"
+                )
+
+    def _toggle_time_animation(self) -> None:
+        """Start or stop time animation (play/pause)."""
+        if self._time_animating:
+            self._stop_time_animation()
+        else:
+            self._start_time_animation()
+
+    def _start_time_animation(self) -> None:
+        """Start advancing time automatically."""
+        self._time_animating = True
+        if self._btn_time_play:
+            self._btn_time_play.setText("⏸ Pause")
+        if self._time_anim_timer is None:
+            self._time_anim_timer = QTimer(self)
+            self._time_anim_timer.timeout.connect(self._time_anim_tick)
+        # Tick every 50ms for smooth animation
+        self._time_anim_timer.start(50)
+
+    def _stop_time_animation(self) -> None:
+        """Stop time animation."""
+        self._time_animating = False
+        if self._btn_time_play:
+            self._btn_time_play.setText("▶ Play")
+        if self._time_anim_timer:
+            self._time_anim_timer.stop()
+
+    def _time_anim_tick(self) -> None:
+        """Advance time by one animation frame."""
+        # _time_anim_speed is minutes per second
+        # At 50ms intervals, that's speed * 0.05 minutes per tick
+        step = self._time_anim_speed * 0.05
+        self._time_offset_minutes += step
+        # Update slider if in range
+        if self.time_slider:
+            clamped = max(-720, min(720, int(self._time_offset_minutes)))
+            self.time_slider.blockSignals(True)
+            self.time_slider.setValue(clamped)
+            self.time_slider.blockSignals(False)
+        self._apply_time_offset()
 
     def _apply_mode_ui(self) -> None:
         """
@@ -1047,6 +1725,10 @@ class AppWindow(QMainWindow):
             # Clear quiz highlights
             if self.star_map:
                 self.star_map.clear_highlights()
+                self.star_map.explore_mode_active = True
+            if self.sphere_widget:
+                self.sphere_widget.clear_highlights()
+                self.sphere_widget.explore_mode_active = True
 
             # Reset target and nearby panels
             self._update_target_info(None)
@@ -1068,6 +1750,14 @@ class AppWindow(QMainWindow):
                 self.pointer_header_widget.setVisible(True)
             if self.pointer_label:
                 self.pointer_label.setVisible(True)
+
+            # Show time scrubber (unless in chart mode)
+            is_chart = (self.star_map and self.star_map.view_mode == "equatorial"
+                        and self.star_map.isVisible())
+            if self.time_scrubber_container:
+                self.time_scrubber_container.setVisible(not is_chart)
+                if not is_chart:
+                    self._update_time_scrubber_display()
 
             # Set default tool
             self._set_explore_tool("select")
@@ -1091,12 +1781,20 @@ class AppWindow(QMainWindow):
             if self.pointer_label:
                 self.pointer_label.setVisible(False)
 
+            # Hide time scrubber and reset to live time
+            if self.time_scrubber_container:
+                self.time_scrubber_container.setVisible(False)
+            self._reset_time()
+
             # Clear tool state
             self.path_objects = []
             if self.star_map:
                 self.star_map.pointer_anchor = None
                 self.star_map.pointer_target = None
                 self.star_map.pointer_path = []
+                self.star_map.explore_mode_active = False
+            if self.sphere_widget:
+                self.sphere_widget.explore_mode_active = False
 
             # Load a fresh question
             self.load_new_question()
@@ -1666,6 +2364,9 @@ class AppWindow(QMainWindow):
             if self.star_map:
                 self.star_map.clear_highlights()
                 self.star_map.set_target(None)
+            if self.sphere_widget:
+                self.sphere_widget.clear_highlights()
+                self.sphere_widget.set_target(None)
 
             self._set_feedback("Click on the map to answer.")
             self._update_score_label()
@@ -1727,8 +2428,8 @@ class AppWindow(QMainWindow):
                 self.current_streak = 0
                 self._set_feedback(message, is_error=True)
 
-            if self.star_map and target_object:
-                self.star_map.highlight_result(
+            if self._active_sky and target_object:
+                self._active_sky.highlight_result(
                     clicked_object=clicked_object,
                     target_object=target_object,
                     is_correct=is_correct,
@@ -1766,8 +2467,8 @@ class AppWindow(QMainWindow):
             self.answer_revealed = True
             self.current_streak = 0
 
-            if self.star_map:
-                self.star_map.show_answer(target_object)
+            if self._active_sky:
+                self._active_sky.show_answer(target_object)
 
             target_name = target_object.get("name", "Unknown object")
             ra_text = target_object.get("ra_text", "Unknown RA")
@@ -2247,6 +2948,8 @@ class AppWindow(QMainWindow):
                 "  1 — Toggle stars\n"
                 "  2 — Toggle deep-sky objects\n"
                 "  3 — Toggle constellation lines\n"
+                "  4 — Toggle sub-grid lines\n"
+                "  5 — Toggle cursor crosshair\n"
                 "  R — Reset view\n"
                 "  +  /  − — Zoom in / out\n"
                 "  Arrow keys — Pan\n"
@@ -2256,7 +2959,12 @@ class AppWindow(QMainWindow):
                 "Sky Views:\n"
                 "  Chart — flat RA/Dec equatorial projection\n"
                 "  Polar — south-centred planisphere (live time)\n"
-                "  Horizon — local sky view facing N/E/S/W (live time)\n\n"
+                "  Horizon — local sky view facing N/E/S/W (live time)\n"
+                "  Sphere — 3D celestial sphere you can rotate\n\n"
+                "Sphere Controls:\n"
+                "  Drag — rotate the sphere\n"
+                "  I — toggle inside/outside view\n"
+                "  Arrow keys — rotate\n\n"
                 "In Horizon view, drag to rotate facing direction.\n"
                 "Arrow keys rotate facing. Scroll to zoom FOV."
             ),

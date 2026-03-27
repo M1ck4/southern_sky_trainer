@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 
 # ----------------------------------------------------------------------
@@ -508,7 +508,196 @@ def decimal_coordinate_label(ra_deg: float, dec_deg: float) -> str:
 # OBSERVER AND TIME
 # ----------------------------------------------------------------------
 
-# Default observer: Brisbane, Queensland
+# Timezone-to-location lookup: maps common timezone names to (lat, lon, city)
+# This gives city-level accuracy without needing network or permissions.
+_TIMEZONE_LOCATIONS: Dict[str, Tuple[float, float, str]] = {
+    # Australia
+    "Australia/Brisbane": (-27.47, 153.03, "Brisbane"),
+    "Australia/Sydney": (-33.87, 151.21, "Sydney"),
+    "Australia/Melbourne": (-37.81, 144.96, "Melbourne"),
+    "Australia/Perth": (-31.95, 115.86, "Perth"),
+    "Australia/Adelaide": (-34.93, 138.60, "Adelaide"),
+    "Australia/Hobart": (-42.88, 147.33, "Hobart"),
+    "Australia/Darwin": (-12.46, 130.84, "Darwin"),
+    "Australia/Lord_Howe": (-31.55, 159.08, "Lord Howe"),
+    "Australia/Lindeman": (-20.45, 149.04, "Lindeman"),
+    # New Zealand
+    "Pacific/Auckland": (-36.85, 174.76, "Auckland"),
+    "Pacific/Chatham": (-43.88, -176.46, "Chatham Islands"),
+    # Asia
+    "Asia/Tokyo": (35.68, 139.69, "Tokyo"),
+    "Asia/Seoul": (37.57, 126.98, "Seoul"),
+    "Asia/Shanghai": (31.23, 121.47, "Shanghai"),
+    "Asia/Hong_Kong": (22.32, 114.17, "Hong Kong"),
+    "Asia/Singapore": (1.35, 103.82, "Singapore"),
+    "Asia/Kolkata": (28.61, 77.21, "Delhi"),
+    "Asia/Calcutta": (22.57, 88.36, "Kolkata"),
+    "Asia/Dubai": (25.20, 55.27, "Dubai"),
+    "Asia/Jakarta": (-6.21, 106.85, "Jakarta"),
+    "Asia/Bangkok": (13.76, 100.50, "Bangkok"),
+    "Asia/Manila": (14.60, 120.98, "Manila"),
+    "Asia/Taipei": (25.03, 121.57, "Taipei"),
+    "Asia/Kuala_Lumpur": (3.14, 101.69, "Kuala Lumpur"),
+    # Europe
+    "Europe/London": (51.51, -0.13, "London"),
+    "Europe/Paris": (48.86, 2.35, "Paris"),
+    "Europe/Berlin": (52.52, 13.41, "Berlin"),
+    "Europe/Rome": (41.90, 12.50, "Rome"),
+    "Europe/Madrid": (40.42, -3.70, "Madrid"),
+    "Europe/Amsterdam": (52.37, 4.90, "Amsterdam"),
+    "Europe/Moscow": (55.76, 37.62, "Moscow"),
+    "Europe/Istanbul": (41.01, 28.98, "Istanbul"),
+    "Europe/Stockholm": (59.33, 18.07, "Stockholm"),
+    "Europe/Oslo": (59.91, 10.75, "Oslo"),
+    "Europe/Helsinki": (60.17, 24.94, "Helsinki"),
+    "Europe/Warsaw": (52.23, 21.01, "Warsaw"),
+    "Europe/Zurich": (47.38, 8.54, "Zurich"),
+    "Europe/Vienna": (48.21, 16.37, "Vienna"),
+    "Europe/Athens": (37.98, 23.73, "Athens"),
+    "Europe/Dublin": (53.35, -6.26, "Dublin"),
+    "Europe/Lisbon": (38.72, -9.14, "Lisbon"),
+    "Europe/Brussels": (50.85, 4.35, "Brussels"),
+    "Europe/Copenhagen": (55.68, 12.57, "Copenhagen"),
+    # Americas
+    "America/New_York": (40.71, -74.01, "New York"),
+    "America/Chicago": (41.88, -87.63, "Chicago"),
+    "America/Denver": (39.74, -104.99, "Denver"),
+    "America/Los_Angeles": (34.05, -118.24, "Los Angeles"),
+    "America/Toronto": (43.65, -79.38, "Toronto"),
+    "America/Vancouver": (49.28, -123.12, "Vancouver"),
+    "America/Mexico_City": (19.43, -99.13, "Mexico City"),
+    "America/Sao_Paulo": (-23.55, -46.63, "São Paulo"),
+    "America/Argentina/Buenos_Aires": (-34.60, -58.38, "Buenos Aires"),
+    "America/Santiago": (-33.45, -70.67, "Santiago"),
+    "America/Lima": (-12.05, -77.04, "Lima"),
+    "America/Bogota": (4.71, -74.07, "Bogotá"),
+    "America/Phoenix": (33.45, -112.07, "Phoenix"),
+    "America/Anchorage": (61.22, -149.90, "Anchorage"),
+    "Pacific/Honolulu": (21.31, -157.86, "Honolulu"),
+    # Africa
+    "Africa/Johannesburg": (-26.20, 28.05, "Johannesburg"),
+    "Africa/Cairo": (30.04, 31.24, "Cairo"),
+    "Africa/Lagos": (6.52, 3.38, "Lagos"),
+    "Africa/Nairobi": (-1.29, 36.82, "Nairobi"),
+    "Africa/Casablanca": (33.59, -7.59, "Casablanca"),
+    "Africa/Cape_Town": (-33.93, 18.42, "Cape Town"),
+    # UTC offsets as fallback keys (rough representative locations)
+    "UTC": (51.51, -0.13, "Greenwich"),
+    "GMT": (51.51, -0.13, "Greenwich"),
+}
+
+# Fallback: map UTC offset (hours) to approximate lat/lon
+_UTC_OFFSET_FALLBACK: Dict[int, Tuple[float, float, str]] = {
+    -12: (28.21, -177.38, "Baker Island region"),
+    -11: (-14.27, -170.70, "Pago Pago"),
+    -10: (21.31, -157.86, "Honolulu"),
+    -9: (61.22, -149.90, "Anchorage"),
+    -8: (34.05, -118.24, "Los Angeles"),
+    -7: (39.74, -104.99, "Denver"),
+    -6: (41.88, -87.63, "Chicago"),
+    -5: (40.71, -74.01, "New York"),
+    -4: (-23.55, -46.63, "São Paulo"),
+    -3: (-34.60, -58.38, "Buenos Aires"),
+    -2: (-3.85, -32.42, "Mid-Atlantic"),
+    -1: (64.15, -21.94, "Reykjavik"),
+    0: (51.51, -0.13, "London"),
+    1: (48.86, 2.35, "Paris"),
+    2: (30.04, 31.24, "Cairo"),
+    3: (55.76, 37.62, "Moscow"),
+    4: (25.20, 55.27, "Dubai"),
+    5: (28.61, 77.21, "Delhi"),
+    6: (13.76, 100.50, "Bangkok"),
+    7: (-6.21, 106.85, "Jakarta"),
+    8: (31.23, 121.47, "Shanghai"),
+    9: (35.68, 139.69, "Tokyo"),
+    10: (-27.47, 153.03, "Brisbane"),
+    11: (-22.28, 166.46, "Nouméa"),
+    12: (-36.85, 174.76, "Auckland"),
+    13: (-36.85, 174.76, "Auckland"),
+}
+
+
+def detect_observer_location() -> Tuple[float, float, str]:
+    """
+    Detect the observer's approximate location from the system timezone.
+
+    Tries the IANA timezone name first (e.g. 'Australia/Brisbane'),
+    then falls back to the UTC offset mapped to a representative city.
+
+    Returns:
+        tuple: (latitude, longitude, city_name)
+    """
+    import datetime
+
+    # Try to get the IANA timezone name
+    try:
+        local_tz = datetime.datetime.now().astimezone().tzinfo
+        tz_name = str(local_tz)
+
+        # Python 3.9+ with zoneinfo gives clean names like 'Australia/Brisbane'
+        # Older versions or Windows may give abbreviations like 'AEST'
+        if tz_name in _TIMEZONE_LOCATIONS:
+            return _TIMEZONE_LOCATIONS[tz_name]
+
+        # Try the tzname (e.g. 'AUS Eastern Standard Time' on Windows)
+        # Check if any key is a substring
+        for key, value in _TIMEZONE_LOCATIONS.items():
+            if key in tz_name or tz_name in key:
+                return value
+    except Exception:
+        pass
+
+    # Try platform-specific timezone detection
+    try:
+        import time
+        tz_name = time.tzname[0] if time.tzname else ""
+        # Check common abbreviations
+        _TZ_ABBREV = {
+            "AEST": "Australia/Brisbane",
+            "AEDT": "Australia/Sydney",
+            "ACST": "Australia/Adelaide",
+            "AWST": "Australia/Perth",
+            "NZST": "Pacific/Auckland",
+            "NZDT": "Pacific/Auckland",
+            "JST": "Asia/Tokyo",
+            "KST": "Asia/Seoul",
+            "CST": "Asia/Shanghai",  # Could be US Central, but Asia is more common globally
+            "SGT": "Asia/Singapore",
+            "IST": "Asia/Kolkata",
+            "GST": "Asia/Dubai",
+            "MSK": "Europe/Moscow",
+            "CET": "Europe/Paris",
+            "EET": "Europe/Athens",
+            "WET": "Europe/Lisbon",
+            "GMT": "Europe/London",
+            "BST": "Europe/London",
+            "EST": "America/New_York",
+            "EDT": "America/New_York",
+            "PST": "America/Los_Angeles",
+            "PDT": "America/Los_Angeles",
+            "MST": "America/Denver",
+            "MDT": "America/Denver",
+        }
+        if tz_name in _TZ_ABBREV:
+            key = _TZ_ABBREV[tz_name]
+            if key in _TIMEZONE_LOCATIONS:
+                return _TIMEZONE_LOCATIONS[key]
+    except Exception:
+        pass
+
+    # Final fallback: use UTC offset
+    try:
+        offset_hours = round(_detect_utc_offset())
+        if offset_hours in _UTC_OFFSET_FALLBACK:
+            return _UTC_OFFSET_FALLBACK[offset_hours]
+    except Exception:
+        pass
+
+    # Absolute fallback: Brisbane
+    return (DEFAULT_LATITUDE, DEFAULT_LONGITUDE, "Brisbane")
+
+
+# Default observer: Brisbane, Queensland (used when detection fails)
 DEFAULT_LATITUDE = -27.4698
 DEFAULT_LONGITUDE = 153.0251
 

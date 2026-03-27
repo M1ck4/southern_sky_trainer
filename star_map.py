@@ -34,6 +34,7 @@ from coordinates import (
     _detect_utc_offset,
     angular_separation_deg,
     current_lst,
+    detect_observer_location,
     format_dec,
     format_ra,
     horizon_view_xy,
@@ -80,9 +81,10 @@ class StarMapWidget(QWidget):
         # View mode
         self.view_mode: str = VIEW_EQUATORIAL
 
-        # Observer state
-        self.observer_lat: float = DEFAULT_LATITUDE
-        self.observer_lon: float = DEFAULT_LONGITUDE
+        # Observer state — auto-detected from system timezone
+        _lat, _lon, self.observer_city = detect_observer_location()
+        self.observer_lat: float = _lat
+        self.observer_lon: float = _lon
         self.utc_offset: float = _detect_utc_offset()
         self.lst_deg: float = current_lst(self.observer_lon, self.utc_offset)
         self.auto_time: bool = True
@@ -122,6 +124,7 @@ class StarMapWidget(QWidget):
 
         # Rendering
         self.show_grid: bool = True
+        self.show_sub_grid: bool = True
         self.show_labels: bool = True
         self.show_hover_label: bool = True
         self.show_stars: bool = True
@@ -129,8 +132,18 @@ class StarMapWidget(QWidget):
         self.show_constellation_lines: bool = True
         self.show_constellation_labels: bool = True
         self.show_horizon_clip: bool = True
+        self.show_crosshair: bool = True
+        self.explore_mode_active: bool = False
         self.invert_ra: bool = True
         self.max_visible_magnitude: float = 6.5
+
+        # Cursor tracking for crosshair / tooltip
+        self._cursor_x: float = -1.0
+        self._cursor_y: float = -1.0
+        self._cursor_ra: Optional[float] = None
+        self._cursor_dec: Optional[float] = None
+        self._cursor_alt: Optional[float] = None
+        self._cursor_az: Optional[float] = None
 
         self._projected_objects: List[Tuple[CatalogObject, float, float, float]] = []
 
@@ -276,6 +289,7 @@ class StarMapWidget(QWidget):
         if self.view_mode == VIEW_HORIZON:
             self._draw_ground_overlay(painter)
 
+        self._draw_cursor_crosshair(painter)
         self._draw_overlay_info(painter)
         painter.end()
 
@@ -333,9 +347,14 @@ class StarMapWidget(QWidget):
         if not self.show_grid:
             return
         w, h = float(self.width()), float(self.height())
+
+        # Pen styles
         minor = QPen(QColor(25, 35, 55))
         major = QPen(QColor(35, 50, 75))
+        sub_pen = QPen(QColor(20, 30, 48))
+        sub_pen.setStyle(Qt.DashLine)
         tc = QColor(160, 140, 90)
+        tc_sub = QColor(120, 110, 75)
         font = QFont()
         font.setPointSize(8)
         painter.setFont(font)
@@ -351,29 +370,84 @@ class StarMapWidget(QWidget):
         dec_overflow = self.center_dec_deg - center_dec_clamped
         cy_center -= dec_overflow * (map_h / 180.0)
 
-        # Declination lines — draw from the virtual map directly,
-        # no tiling, so labels don't duplicate at tile seams
-        for dec in range(-90, 91, 15):
-            # Y position in virtual map
-            vy = (90.0 - dec) / 180.0 * map_h
-            y = (vy - cy_center) * self.zoom_factor + h / 2.0
+        # Determine sub-grid detail level based on zoom
+        z = self.zoom_factor
+        dec_sub_step, ra_sub_step_deg = self._grid_sub_steps(z)
+        sub_active = self.show_sub_grid and dec_sub_step is not None
 
-            if 0 <= y <= h:
-                painter.setPen(major if dec % 30 == 0 else minor)
+        # --- Declination lines ---
+        # When sub-grid is active, draw all lines in one unified pass
+        # so primary labels blend with the finer grid. When inactive,
+        # draw only the primary 15° lines.
+        if sub_active:
+            step_10 = int(dec_sub_step * 10)
+            for dec_10 in range(-900, 901, step_10):
+                dec = dec_10 / 10.0
+                vy = (90.0 - dec) / 180.0 * map_h
+                y = (vy - cy_center) * self.zoom_factor + h / 2.0
+                if not (0 <= y <= h):
+                    continue
+                is_primary = (dec_10 % 150 == 0)
+                is_major = (dec_10 % 300 == 0)
+                if is_primary:
+                    painter.setPen(major if is_major else minor)
+                else:
+                    painter.setPen(sub_pen)
                 painter.drawLine(0, int(y), int(w), int(y))
-                painter.setPen(tc)
-                painter.drawText(8, int(y) - 4, f"{dec:+d}°")
+                # Unified labels: primary lines in bright colour, sub in dim
+                painter.setPen(tc if is_primary else tc_sub)
+                if dec == int(dec):
+                    painter.drawText(8, int(y) - 4, f"{int(dec):+d}°")
+                else:
+                    painter.drawText(8, int(y) - 4, f"{dec:+.1f}°")
+        else:
+            for dec in range(-90, 91, 15):
+                vy = (90.0 - dec) / 180.0 * map_h
+                y = (vy - cy_center) * self.zoom_factor + h / 2.0
+                if 0 <= y <= h:
+                    painter.setPen(major if dec % 30 == 0 else minor)
+                    painter.drawLine(0, int(y), int(w), int(y))
+                    painter.setPen(tc)
+                    painter.drawText(8, int(y) - 4, f"{dec:+d}°")
 
-        # RA lines — use sky_to_viewport since horizontal tiling
-        # doesn't cause label overlap (RA values are unique per tile)
-        for rh in range(0, 24):
-            rd = rh * 15.0
-            x, _ = self.sky_to_viewport(rd, 0.0)
-            if 0 <= x <= w:
-                painter.setPen(major if rh % 2 == 0 else minor)
+        # --- RA lines ---
+        # Same unified approach: when sub-grid is active, iterate at
+        # the sub-grid resolution and style primary lines differently.
+        if sub_active:
+            step_10 = int(ra_sub_step_deg * 10)
+            for ra_10 in range(0, 3600, step_10):
+                ra_d = ra_10 / 10.0
+                x, _ = self.sky_to_viewport(ra_d, 0.0)
+                if not (0 <= x <= w):
+                    continue
+                is_primary = (ra_10 % 150 == 0)
+                is_major = is_primary and ((ra_10 // 150) % 2 == 0)
+                if is_primary:
+                    painter.setPen(major if is_major else minor)
+                else:
+                    painter.setPen(sub_pen)
                 painter.drawLine(int(x), 0, int(x), int(h))
-                painter.setPen(tc)
-                painter.drawText(int(x) + 4, 16, f"{rh:02d}h")
+                # Unified RA labels: always show HHhMMm format
+                ra_h = ra_d / 15.0
+                hrs = int(ra_h)
+                mins = int(round((ra_h - hrs) * 60.0))
+                if mins == 60:
+                    mins = 0
+                    hrs = (hrs + 1) % 24
+                painter.setPen(tc if is_primary else tc_sub)
+                if mins == 0:
+                    painter.drawText(int(x) + 4, 16, f"{hrs:02d}h")
+                else:
+                    painter.drawText(int(x) + 4, 16, f"{hrs:02d}h{mins:02d}m")
+        else:
+            for rh in range(0, 24):
+                rd = rh * 15.0
+                x, _ = self.sky_to_viewport(rd, 0.0)
+                if 0 <= x <= w:
+                    painter.setPen(major if rh % 2 == 0 else minor)
+                    painter.drawLine(int(x), 0, int(x), int(h))
+                    painter.setPen(tc)
+                    painter.drawText(int(x) + 4, 16, f"{rh:02d}h")
 
     def _draw_polar_grid(self, painter: QPainter) -> None:
         if not self.show_grid:
@@ -383,28 +457,74 @@ class StarMapWidget(QWidget):
         cr = min(self.width(), self.height()) / 2.0 * 0.9 * self.polar_zoom
         line = QPen(QColor(25, 35, 55))
         maj = QPen(QColor(35, 50, 75))
+        sub_pen = QPen(QColor(20, 30, 48))
+        sub_pen.setStyle(Qt.DashLine)
         tc = QColor(160, 140, 90)
+        tc_sub = QColor(120, 110, 75)
         font = QFont()
         font.setPointSize(8)
         painter.setFont(font)
 
-        for dec in range(-90, 1, 15):
-            r = ((dec + 90.0) / 180.0) * cr
-            if r < 1:
-                continue
-            painter.setPen(maj if dec % 30 == 0 else line)
-            painter.setBrush(Qt.NoBrush)
-            painter.drawEllipse(QPointF(cx, cy), r, r)
-            painter.setPen(tc)
-            painter.drawText(int(cx + r + 4), int(cy + 4), f"{dec}°")
+        z = self.polar_zoom
+        dec_sub_step, _ = self._grid_sub_steps(z)
+        sub_active = self.show_sub_grid and dec_sub_step is not None
 
-        for h in range(0, 24, 2):
-            rd = (self.lst_deg + h * 15.0) % 360.0
-            x, y = polar_stereo_xy(rd, 0.0, self.lst_deg, cr, south_pole=True)
-            painter.setPen(line)
-            painter.drawLine(QPointF(cx, cy), QPointF(cx + x, cy + y))
-            painter.setPen(tc)
-            painter.drawText(int(cx + x * 1.06) - 8, int(cy + y * 1.06) + 4, f"{h:02d}h")
+        # Declination rings — unified pass when sub-grid is active
+        if sub_active:
+            step_10 = int(dec_sub_step * 10)
+            for dec_10 in range(-900, 10, step_10):
+                dec = dec_10 / 10.0
+                r = ((dec + 90.0) / 180.0) * cr
+                if r < 1:
+                    continue
+                is_primary = (dec_10 % 150 == 0)
+                is_major = is_primary and (dec_10 % 300 == 0)
+                if is_primary:
+                    painter.setPen(maj if is_major else line)
+                else:
+                    painter.setPen(sub_pen)
+                painter.setBrush(Qt.NoBrush)
+                painter.drawEllipse(QPointF(cx, cy), r, r)
+                painter.setPen(tc if is_primary else tc_sub)
+                painter.drawText(int(cx + r + 4), int(cy + 4), f"{int(dec)}°")
+        else:
+            for dec in range(-90, 1, 15):
+                r = ((dec + 90.0) / 180.0) * cr
+                if r < 1:
+                    continue
+                painter.setPen(maj if dec % 30 == 0 else line)
+                painter.setBrush(Qt.NoBrush)
+                painter.drawEllipse(QPointF(cx, cy), r, r)
+                painter.setPen(tc)
+                painter.drawText(int(cx + r + 4), int(cy + 4), f"{dec}°")
+
+        # RA lines — unified pass when sub-grid is active
+        if sub_active:
+            ra_step = 1.0 if z < 3.0 else 0.5  # hours
+            step_10 = int(ra_step * 10)
+            for h_10 in range(0, 240, step_10):
+                h_val = h_10 / 10.0
+                rd = (self.lst_deg + h_val * 15.0) % 360.0
+                x, y = polar_stereo_xy(rd, 0.0, self.lst_deg, cr, south_pole=True)
+                is_primary = (h_10 % 20 == 0)
+                painter.setPen(line if is_primary else sub_pen)
+                painter.drawLine(QPointF(cx, cy), QPointF(cx + x, cy + y))
+                hrs = int(h_val)
+                mins = int(round((h_val - hrs) * 60.0))
+                if mins == 60:
+                    mins = 0
+                    hrs = (hrs + 1) % 24
+                painter.setPen(tc if is_primary else tc_sub)
+                lbl = f"{hrs:02d}h" if mins == 0 else f"{hrs:02d}h{mins:02d}m"
+                painter.drawText(int(cx + x * 1.06) - 8, int(cy + y * 1.06) + 4, lbl)
+        else:
+            for h in range(0, 24, 2):
+                rd = (self.lst_deg + h * 15.0) % 360.0
+                x, y = polar_stereo_xy(rd, 0.0, self.lst_deg, cr, south_pole=True)
+                painter.setPen(line)
+                painter.drawLine(QPointF(cx, cy), QPointF(cx + x, cy + y))
+                painter.setPen(tc)
+                painter.drawText(int(cx + x * 1.06) - 8, int(cy + y * 1.06) + 4, f"{h:02d}h")
 
         horizon_dec = -(90.0 + self.observer_lat)
         if -90.0 < horizon_dec < 90.0:
@@ -427,7 +547,10 @@ class StarMapWidget(QWidget):
         maj = QPen(QColor(35, 50, 75))
         hp = QPen(QColor(100, 80, 50))
         hp.setWidth(2)
+        sub_pen = QPen(QColor(20, 30, 48))
+        sub_pen.setStyle(Qt.DashLine)
         tc = QColor(160, 140, 90)
+        tc_sub = QColor(120, 110, 75)
         font = QFont()
         font.setPointSize(8)
         painter.setFont(font)
@@ -436,27 +559,68 @@ class StarMapWidget(QWidget):
         default_center_alt = v_fov / 2.0
         alt_shift = (self.horizon_alt_center - default_center_alt) / v_fov * h
 
-        for alt in range(-15, 91, 15):
-            base_y = h - (alt / v_fov) * h
-            y = base_y + alt_shift
-            if 0 <= y <= h:
-                painter.setPen(hp if alt == 0 else (maj if alt % 30 == 0 else line))
-                painter.drawLine(0, int(y), int(w), int(y))
-                painter.setPen(tc)
-                painter.drawText(8, int(y) - 4, "Horizon" if alt == 0 else f"{alt}°")
+        fov_zoom = 120.0 / max(self.horizon_fov_deg, 30.0)
+        sub_active = self.show_sub_grid and fov_zoom >= 1.3
 
+        # Altitude lines — unified pass
+        if sub_active:
+            alt_sub = 5 if fov_zoom < 2.5 else 2
+            for alt in range(-15, 91, alt_sub):
+                base_y = h - (alt / v_fov) * h
+                y = base_y + alt_shift
+                if not (0 <= y <= h):
+                    continue
+                is_primary = (alt % 15 == 0)
+                if alt == 0:
+                    painter.setPen(hp)
+                elif is_primary:
+                    painter.setPen(maj if alt % 30 == 0 else line)
+                else:
+                    painter.setPen(sub_pen)
+                painter.drawLine(0, int(y), int(w), int(y))
+                painter.setPen(tc if is_primary else tc_sub)
+                if alt == 0:
+                    painter.drawText(8, int(y) - 4, "Horizon")
+                else:
+                    painter.drawText(8, int(y) - 4, f"{alt}°")
+        else:
+            for alt in range(-15, 91, 15):
+                base_y = h - (alt / v_fov) * h
+                y = base_y + alt_shift
+                if 0 <= y <= h:
+                    painter.setPen(hp if alt == 0 else (maj if alt % 30 == 0 else line))
+                    painter.drawLine(0, int(y), int(w), int(y))
+                    painter.setPen(tc)
+                    painter.drawText(8, int(y) - 4, "Horizon" if alt == 0 else f"{alt}°")
+
+        # Azimuth lines — unified pass
         compass = {0: "N", 45: "NE", 90: "E", 135: "SE",
                    180: "S", 225: "SW", 270: "W", 315: "NW"}
-        for az in range(0, 360, 15):
-            offset = (az - self.facing_az_deg + 180.0) % 360.0 - 180.0
-            if abs(offset) > self.horizon_fov_deg / 2.0:
-                continue
-            # Map azimuth to x position
-            x = (w / 2.0) + (offset / self.horizon_fov_deg) * w
-            painter.setPen(maj if az % 45 == 0 else line)
-            painter.drawLine(int(x), 0, int(x), int(h))
-            painter.setPen(tc)
-            painter.drawText(int(x) + 4, 16, compass.get(az, f"{az}°"))
+        if sub_active:
+            az_sub = 5 if fov_zoom < 2.5 else 2
+            for az in range(0, 360, az_sub):
+                offset = (az - self.facing_az_deg + 180.0) % 360.0 - 180.0
+                if abs(offset) > self.horizon_fov_deg / 2.0:
+                    continue
+                x = (w / 2.0) + (offset / self.horizon_fov_deg) * w
+                is_primary = (az % 15 == 0)
+                if is_primary:
+                    painter.setPen(maj if az % 45 == 0 else line)
+                else:
+                    painter.setPen(sub_pen)
+                painter.drawLine(int(x), 0, int(x), int(h))
+                painter.setPen(tc if is_primary else tc_sub)
+                painter.drawText(int(x) + 4, 16, compass.get(az, f"{az}°"))
+        else:
+            for az in range(0, 360, 15):
+                offset = (az - self.facing_az_deg + 180.0) % 360.0 - 180.0
+                if abs(offset) > self.horizon_fov_deg / 2.0:
+                    continue
+                x = (w / 2.0) + (offset / self.horizon_fov_deg) * w
+                painter.setPen(maj if az % 45 == 0 else line)
+                painter.drawLine(int(x), 0, int(x), int(h))
+                painter.setPen(tc)
+                painter.drawText(int(x) + 4, 16, compass.get(az, f"{az}°"))
 
         facing = compass.get(int(self.facing_az_deg), f"{self.facing_az_deg:.0f}°")
         painter.setPen(QColor(200, 220, 240))
@@ -765,11 +929,127 @@ class StarMapWidget(QWidget):
         font.setBold(False)
         painter.setFont(font)
 
+    def _draw_cursor_crosshair(self, painter: QPainter) -> None:
+        """Draw a subtle crosshair at the cursor position with coordinate tooltip.
+        Only active in explore mode."""
+        if not self.show_crosshair or not self.explore_mode_active:
+            return
+        if self._cursor_x < 0 or self._cursor_y < 0:
+            return
+
+        cx, cy = self._cursor_x, self._cursor_y
+        w, h = float(self.width()), float(self.height())
+
+        # Don't draw if cursor is in the overlay info panel area
+        if cy > h - 110 and cx < 580:
+            return
+
+        # Subtle crosshair lines
+        pen = QPen(QColor(120, 140, 180, 60))
+        pen.setWidth(1)
+        pen.setStyle(Qt.DashLine)
+        painter.setPen(pen)
+
+        # Horizontal and vertical lines through cursor
+        painter.drawLine(int(cx), 0, int(cx), int(h))
+        painter.drawLine(0, int(cy), int(w), int(cy))
+
+        # Small bright cross at cursor centre
+        cp = QPen(QColor(180, 200, 230, 140))
+        cp.setWidth(1)
+        painter.setPen(cp)
+        cross_size = 8
+        painter.drawLine(int(cx - cross_size), int(cy), int(cx - 3), int(cy))
+        painter.drawLine(int(cx + 3), int(cy), int(cx + cross_size), int(cy))
+        painter.drawLine(int(cx), int(cy - cross_size), int(cx), int(cy - 3))
+        painter.drawLine(int(cx), int(cy + 3), int(cx), int(cy + cross_size))
+
+        # Coordinate tooltip near cursor
+        label = self._cursor_coord_text()
+        if not label:
+            return
+
+        font = QFont()
+        font.setPointSize(9)
+        painter.setFont(font)
+        fm = painter.fontMetrics()
+        text_w = fm.horizontalAdvance(label) + 16
+        text_h = fm.height() + 8
+
+        # Position tooltip offset from cursor (avoid going off-screen)
+        tx = cx + 14
+        ty = cy - 14 - text_h
+        if tx + text_w > w:
+            tx = cx - 14 - text_w
+        if ty < 0:
+            ty = cy + 14
+
+        # Background
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QColor(8, 12, 24, 200))
+        painter.drawRoundedRect(int(tx), int(ty), int(text_w), int(text_h), 4, 4)
+
+        # Border
+        bp = QPen(QColor(60, 80, 120, 160))
+        bp.setWidth(1)
+        painter.setPen(bp)
+        painter.drawRoundedRect(int(tx), int(ty), int(text_w), int(text_h), 4, 4)
+
+        # Text
+        painter.setPen(QColor(200, 215, 240))
+        painter.drawText(int(tx + 8), int(ty + text_h - 6), label)
+
+    def _cursor_coord_text(self) -> str:
+        """Build the coordinate text for the cursor tooltip."""
+        if self.view_mode == VIEW_HORIZON:
+            if self._cursor_alt is not None and self._cursor_az is not None:
+                dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+                compass = dirs[int((self._cursor_az + 22.5) % 360 / 45)]
+                return f"Alt {self._cursor_alt:.1f}°  Az {self._cursor_az:.1f}° {compass}"
+            return ""
+        else:
+            if self._cursor_ra is not None and self._cursor_dec is not None:
+                ra_text = format_ra(self._cursor_ra % 360.0)
+                dec_text = format_dec(max(-90.0, min(90.0, self._cursor_dec)))
+                return f"RA {ra_text}  Dec {dec_text}"
+            return ""
+
+    @staticmethod
+    def _grid_sub_steps(zoom: float) -> Tuple[Optional[float], Optional[float]]:
+        """
+        Determine sub-grid step sizes based on zoom level.
+
+        Returns:
+            tuple: (dec_sub_step_deg, ra_sub_step_deg) or (None, None) if
+                   sub-grid should not be shown at this zoom level.
+
+        The logic creates an adaptive grid:
+        - Zoom < 1.5: No sub-grid (full sky view, too cluttered)
+        - Zoom 1.5-3.0: 5° Dec, 7.5° RA (30min)
+        - Zoom 3.0-6.0: 5° Dec, 3.75° RA (15min)
+        - Zoom 6.0-12.0: 2° Dec, 3.75° RA (15min)
+        - Zoom 12.0+: 1° Dec, 1.875° RA (7.5min)
+        """
+        if zoom < 1.5:
+            return None, None
+        elif zoom < 3.0:
+            return 5.0, 7.5     # 5° dec, 30min RA
+        elif zoom < 6.0:
+            return 5.0, 3.75    # 5° dec, 15min RA
+        elif zoom < 12.0:
+            return 2.0, 3.75    # 2° dec, 15min RA
+        else:
+            return 1.0, 1.875   # 1° dec, 7.5min RA
+
     # --- Overlay ---
 
     def _draw_overlay_info(self, painter: QPainter) -> None:
         margin = 10
-        pr = QRectF(margin, self.height() - 82, 540, 72)
+        # Show cursor coords only in explore mode
+        show_cursor = (self.explore_mode_active and self.show_crosshair
+                       and self._cursor_x >= 0)
+        panel_h = 90 if show_cursor else 72
+        pr = QRectF(margin, self.height() - panel_h - 10, 560, panel_h)
         painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(0, 0, 0, 150))
         painter.drawRoundedRect(pr, 8, 8)
@@ -788,17 +1068,40 @@ class StarMapWidget(QWidget):
             f_l = cd.get(int(self.facing_az_deg), f"{self.facing_az_deg:.0f}°")
             t1 = f"Horizon   |   Facing {f_l}   |   LST {self.lst_deg / 15:.1f}h   |   FOV {self.horizon_fov_deg:.0f}°"
 
-        painter.drawText(pr.adjusted(10, 10, -10, -38), Qt.AlignLeft | Qt.AlignVCenter, t1)
+        painter.drawText(pr.adjusted(10, 8, -10, -52), Qt.AlignLeft | Qt.AlignVCenter, t1)
 
         t2 = (f"Stars [{'On' if self.show_stars else 'Off'}]   "
               f"Deep Sky [{'On' if self.show_deep_sky else 'Off'}]   "
-              f"Constellations [{'On' if self.show_constellation_lines else 'Off'}]")
-        painter.drawText(pr.adjusted(10, 28, -10, -20), Qt.AlignLeft | Qt.AlignVCenter, t2)
+              f"Constellations [{'On' if self.show_constellation_lines else 'Off'}]   "
+              f"Sub-Grid [{'On' if self.show_sub_grid else 'Off'}]")
+        painter.drawText(pr.adjusted(10, 24, -10, -36), Qt.AlignLeft | Qt.AlignVCenter, t2)
+
+        # Cursor coordinate readout (explore mode only)
+        if show_cursor:
+            cursor_text = ""
+            if self._cursor_ra is not None and self._cursor_dec is not None:
+                ra_str = format_ra(self._cursor_ra % 360.0)
+                dec_str = format_dec(max(-90.0, min(90.0, self._cursor_dec)))
+                cursor_text = f"Cursor: RA {ra_str}, Dec {dec_str}"
+                if self._cursor_alt is not None:
+                    cursor_text += f"   |   Alt {self._cursor_alt:.1f}°"
+            elif self._cursor_alt is not None and self._cursor_az is not None:
+                dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+                compass = dirs[int((self._cursor_az + 22.5) % 360 / 45)]
+                cursor_text = f"Cursor: Alt {self._cursor_alt:.1f}°, Az {self._cursor_az:.1f}° {compass}"
+
+            if cursor_text:
+                painter.setPen(QColor(160, 180, 210))
+                painter.drawText(pr.adjusted(10, 40, -10, -20), Qt.AlignLeft | Qt.AlignVCenter, cursor_text)
+
+            hover_y_offset = 56
+        else:
+            hover_y_offset = 40
 
         t3 = "Hover: none"
         if self.hovered_object and self.show_hover_label:
             t3 = self._obj_desc(self.hovered_object)
-        painter.drawText(pr.adjusted(10, 45, -10, -4), Qt.AlignLeft | Qt.AlignVCenter, t3)
+        painter.drawText(pr.adjusted(10, hover_y_offset, -10, -4), Qt.AlignLeft | Qt.AlignVCenter, t3)
 
     # ------------------------------------------------------------------
     # INTERACTION
@@ -823,6 +1126,11 @@ class StarMapWidget(QWidget):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        # Always update cursor position for crosshair display
+        self._cursor_x = event.position().x()
+        self._cursor_y = event.position().y()
+        self._update_cursor_coords()
+
         if self._dragging and self._last_mouse_pos is not None:
             d = event.pos() - self._last_mouse_pos
             self._pan_by_pixels(d.x(), d.y())
@@ -832,8 +1140,45 @@ class StarMapWidget(QWidget):
             h = self._nearest_visible_object(event.position().x(), event.position().y(), 12.0)
             if h != self.hovered_object:
                 self.hovered_object = h
-                self.update()
+            self.update()
         super().mouseMoveEvent(event)
+
+    def leaveEvent(self, event) -> None:
+        """Clear cursor position when mouse leaves the widget."""
+        self._cursor_x = -1.0
+        self._cursor_y = -1.0
+        self._cursor_ra = None
+        self._cursor_dec = None
+        self._cursor_alt = None
+        self._cursor_az = None
+        self.update()
+        super().leaveEvent(event)
+
+    def _update_cursor_coords(self) -> None:
+        """Compute the sky coordinates under the cursor."""
+        if self._cursor_x < 0 or self._cursor_y < 0:
+            self._cursor_ra = None
+            self._cursor_dec = None
+            self._cursor_alt = None
+            self._cursor_az = None
+            return
+
+        if self.view_mode == VIEW_HORIZON:
+            az, alt = self._horizon_to_sky(self._cursor_x, self._cursor_y)
+            self._cursor_alt = alt
+            self._cursor_az = az
+            # Also compute approximate RA/Dec for reference
+            # (reverse of ra_dec_to_alt_az is complex, so we store alt/az)
+            self._cursor_ra = None
+            self._cursor_dec = None
+        else:
+            ra, dec = self.viewport_to_sky(self._cursor_x, self._cursor_y)
+            self._cursor_ra = ra
+            self._cursor_dec = dec
+            # Compute alt/az too for equatorial/polar modes
+            alt, az = ra_dec_to_alt_az(ra, dec, self.lst_deg, self.observer_lat)
+            self._cursor_alt = alt
+            self._cursor_az = az
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() in (Qt.LeftButton, Qt.MiddleButton, Qt.RightButton):
@@ -1129,6 +1474,8 @@ class StarMapWidget(QWidget):
         if k == Qt.Key_1: self.show_stars = not self.show_stars; self.update(); return
         if k == Qt.Key_2: self.show_deep_sky = not self.show_deep_sky; self.update(); return
         if k == Qt.Key_3: self.show_constellation_lines = not self.show_constellation_lines; self.update(); return
+        if k == Qt.Key_4: self.show_sub_grid = not self.show_sub_grid; self.update(); return
+        if k == Qt.Key_5: self.show_crosshair = not self.show_crosshair; self.update(); return
 
         if self.view_mode == VIEW_EQUATORIAL:
             s_ra, s_dec = 8.0 / self.zoom_factor, 6.0 / self.zoom_factor
